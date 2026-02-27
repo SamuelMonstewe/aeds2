@@ -25,6 +25,20 @@ Nesta disciplina são abordados os seguintes tópicos:
 
 ---
 
->Você também encontrará algumas implementações em diversas linguagens, a exemplo da pesquisa binária.
-Diretórios que iniciam com labXX (sendo XX um número), são exercícios que foram passadas em laboratório.
+## 📂 Estrutura do Repositório
 
+```text
+.
+├── 📁 algoritmos/      # Implementações puras
+├── 🧪 labs/            # Exercícios de laboratório
+│   ├── lab01/  
+│   ├── lab02/        
+│   └── ...             # Demais atividades (lab03, lab04, etc.)
+└── 📄 README.md        # Documentação principal
+```
+## 📚 Referências Bibliográficas
+
+Este projeto foi desenvolvido utilizando as seguintes obras como base teórica:
+
+* **Concrete Mathematics: A Foundation for Computer Science** — Ronald L. Graham, Donald E. Knuth, Oren Patashnik.
+* **Introduction to Algorithms (CLRS)** — Thomas H. Cormen, Charles E. Leiserson, Ronald L. Rivest, Clifford Stein.
