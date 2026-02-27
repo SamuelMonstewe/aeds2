@@ -1,4 +1,4 @@
-# aeds2
+# aeds2 📕
 Este repositório contém tudo que eu aprendi sobre **AEDS II (Algoritmos e Estruturas de Dados II)** até o momento.
 Nesta disciplina são abordados os seguintes tópicos:
 - Noções de complexidade
@@ -22,5 +22,6 @@ Nesta disciplina são abordados os seguintes tópicos:
 
 ---
 
-Você também encontrará algumas implementações em diversas linguagens, a exemplo da pesquisa binária.
+>Você também encontrará algumas implementações em diversas linguagens, a exemplo da pesquisa binária.
+Diretórios que iniciam com labXX (sendo XX um número), são exercícios que foram passadas em laboratório.
 
