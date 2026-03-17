@@ -30,7 +30,10 @@ Nesta disciplina são abordados os seguintes tópicos:
 ```text
 .
 ├── 📁 algoritmos/      # Implementações puras
-├── 🖥️ tps              # Trabalhos práticos
+├── 🖥️ tps/             # Trabalhos práticos
+    ├── tp01/
+    ├── tp02/
+    └── ...
 ├── 🧪 labs/            # Exercícios de laboratório
 │   ├── lab01/  
 │   ├── lab02/        
