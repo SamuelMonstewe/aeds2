@@ -1,10 +1,11 @@
 #include <stdio.h>
 void ciframentoRecursivo(char *s, int i) {
-  if (s[i] == '\0')
+  if (s[i] == '\0') // caso base é o caractere de fim de string, obviamente
     return;
 
-  s[i] = s[i] + 3;
-  ciframentoRecursivo(s, i + 1);
+  s[i] = s[i] + 3;               // fazemos o deslocamento na tabela ascii
+  ciframentoRecursivo(s, i + 1); // incrementamos o i para pegar o próximo
+                                 // caractere na proxima chamada
 }
 void ciframento(char *s) { ciframentoRecursivo(s, 0); }
 int main() {

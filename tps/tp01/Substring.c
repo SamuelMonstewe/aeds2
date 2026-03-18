@@ -6,11 +6,13 @@ int substringMaisLonga(char *s) {
   for (int i = 1; s[i] != '\0' && s[i] != '\n'; i++) {
     for (j = novaSub; j < i; j++) {
       if (s[j] == s[i]) {
+        // se encontrar um caractere repetido, vamos marcar o inicio de nova
+        // substring utilizando a variável novaSub
         novaSub = j + 1;
-        j = i;
+        j = i; // forçamos a parada do loop interno
       }
     }
-    size = i - novaSub + 1;
+    size = i - novaSub + 1; // calculamos o tamanho da nova substring obtida
     if (size > maior)
       maior = size;
   }

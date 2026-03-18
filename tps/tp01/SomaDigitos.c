@@ -1,6 +1,9 @@
 #include <stdio.h>
 
 int somaDigitosRecursivo(int num) {
+  // se o quociente for 0, significa que
+  // estamos na casa mais a esquerda
+
   if ((num / 10) == 0)
     return num;
 

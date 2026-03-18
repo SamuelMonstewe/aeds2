@@ -9,11 +9,11 @@ int main() {
     for (int i = 0; v[i] != '\0'; i++) {
       end++;
     }
-    end = end - 2;
+    end = end - 2; // utilizamos o end para marcar o fim da string
     int temp;
 
     for (int i = 0; i < end + 1; i++, end--) {
-      temp = v[i];
+      temp = v[i]; // fazemos as permutações necessárias
       v[i] = v[end];
       v[end] = temp;
     }
