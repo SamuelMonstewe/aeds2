@@ -1,7 +1,10 @@
+#include <locale.h>
 #include <stdio.h>
 void ciframentoRecursivo(char *s, int i) {
-  if (s[i] == '\0') // caso base é o caractere de fim de string, obviamente
+  if (s[i] == '\0' || s[i] == '\n' || s[i] == '\r') {
+    s[i] = '\0';
     return;
+  }
 
   s[i] = s[i] + 3;               // fazemos o deslocamento na tabela ascii
   ciframentoRecursivo(s, i + 1); // incrementamos o i para pegar o próximo
@@ -9,7 +12,8 @@ void ciframentoRecursivo(char *s, int i) {
 }
 void ciframento(char *s) { ciframentoRecursivo(s, 0); }
 int main() {
-  char s[100];
+  setlocale(LC_ALL, "pt_BR.iso88591");
+  char s[1000];
 
   fgets(s, sizeof(s), stdin);
 
