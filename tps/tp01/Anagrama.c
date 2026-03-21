@@ -1,6 +1,25 @@
 #include <stdio.h>
 
+int isComprimentoIgual(char *s1, char *s2) {
+
+  int sizeS1 = 0, sizeS2 = 0;
+  for (int i = 0; s1[i] != '\0' && s1[i] != '\n'; i++) {
+    sizeS1++;
+  }
+  for (int j = 0; s2[j] != '\0' && s2[j] != '\n'; j++) {
+    sizeS2++;
+  }
+
+  if (sizeS1 != sizeS2)
+    return 0;
+
+  return 1;
+}
 int isAnagrama(char *s1, char *s2) {
+
+  if (!isComprimentoIgual(s1, s2)) {
+    return 0;
+  }
 
   int achou = 0;
   char stop = ' ';
