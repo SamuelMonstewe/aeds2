@@ -78,18 +78,22 @@ public class Is {
     return true;
   }
 
-  // a implementação desse método é identica ao anterior porque Z é um subconjunto
-  // de R
-  // public static boolean isNumeroReal(String s) {
-  // for (int i = 0; i < s.length(); i++) {
-  // if (!(s.charAt(i) >= 30 && s.charAt(i) <= 39)) // se o caractere atual não
-  // estiver entre esse range, pode parar!
-  // return false;
+  public static boolean isNumeroReal(String s) {
+    int pontoOuVirgula = 0;
+    for (int i = 0; i < s.length(); i++) {
+      char c = s.charAt(i);
 
-  // }
+      if (c == '.' || c == ',')
+        pontoOuVirgula++;
+      else if (!(c >= '0' && c <= '9'))
+        return false;
 
-  // return true;
-  // }
+      if (pontoOuVirgula > 1)
+        return false;
+    }
+
+    return true;
+  }
 
   public static void main(String[] args) {
     Scanner s = new Scanner(System.in);
@@ -99,7 +103,7 @@ public class Is {
       System.out.print(isSomenteVogais(input) ? "SIM " : "NAO ");
       System.out.print(isSomenteConsoantes(input) ? "SIM " : "NAO ");
       System.out.print(isNumeroInteiro(input) ? "SIM " : "NAO ");
-      // System.out.print(isNumeroReal(input) ? "SIM \n" : "NAO \n");
+      System.out.print(isNumeroReal(input) ? "SIM " : "NAO ");
       System.out.println();
       input = s.nextLine();
     }
