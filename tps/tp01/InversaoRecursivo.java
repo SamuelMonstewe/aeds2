@@ -1,4 +1,3 @@
-import java.util.Scanner;
 
 public class InversaoRecursivo {
   public static void inversao(String s) {
@@ -10,19 +9,18 @@ public class InversaoRecursivo {
       return;
 
     inversaoRecursivo(s, i + 1);
-    System.out.print(s.charAt(i));
+    MyIO.print(s.charAt(i));
 
   }
 
   public static void main(String[] args) {
-    Scanner s = new Scanner(System.in);
-    String palavra = s.nextLine();
+    MyIO.setCharset("UTF-8");
+    String palavra = MyIO.readLine();
     while (!(palavra.charAt(0) == 'F' && palavra.charAt(1) == 'I' && palavra.charAt(2) == 'M')) {
       inversao(palavra);
-      System.out.println();
-      palavra = s.nextLine();
+      MyIO.println("");
+      palavra = MyIO.readLine();
     }
 
-    s.close();
   }
 }
