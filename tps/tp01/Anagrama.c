@@ -4,28 +4,39 @@ int isAnagrama(char *s1, char *s2) {
 
   int achou = 0;
   char stop = ' ';
-  int i;
-  for (i = 0; s1[i] != '\0'; i++, stop = ' ') {
-    for (int j = 0; s2[j] != '\0' && stop != '\0'; j++) {
-      // na tabela ascii, as letras maiusculas possuem uma certa simetria com as
-      // minusculas, se você somar 32 a uma maiuscula, chega na sua
-      // correspondente minuscula e vice-versa
-      if (s1[i] == s2[j] || s1[i] - 32 == s2[j] || s1[i] == s2[j] - 32) {
-        achou++;
-        stop = '\0';
+  int teveOcorrencia = 1;
+  int countOcorrenciasS1 = 0, countOcorrenciasS2 = 0;
+
+  for (int i = 0; s1[i] != '\0' && teveOcorrencia; i++) {
+    teveOcorrencia = 0;
+    char caracter = s1[i];
+
+    for (int j = 0; s1[j] != '\0'; j++) {
+      if (s1[j] == caracter || s1[j] - 32 == caracter ||
+          s1[j] == caracter - 32) {
+        countOcorrenciasS1++;
       }
     }
+    for (int k = 0; s2[k] != '\0'; k++) {
+      if (s2[k] == caracter || s2[k] - 32 == caracter ||
+          s2[k] == caracter - 32) {
+        countOcorrenciasS2++;
+      }
+    }
+
+    if (countOcorrenciasS1 == countOcorrenciasS2) {
+      teveOcorrencia = 1;
+    }
+
+    countOcorrenciasS1 = countOcorrenciasS2 = 0;
   }
 
-  if (achou == i)
-    return 1;
-
-  return 0;
+  return teveOcorrencia;
 }
 int main() {
-  char entrada[100];
-  char s1[50];
-  char s2[50];
+  char entrada[1000];
+  char s1[500];
+  char s2[500];
 
   fgets(entrada, sizeof(entrada), stdin);
 
