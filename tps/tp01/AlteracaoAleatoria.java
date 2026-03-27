@@ -1,16 +1,17 @@
 import java.util.Random;
+import java.util.Scanner;
 
 public class AlteracaoAleatoria {
 
   public static void main(String args[]) {
-    MyIO.setCharset("ISO-8859-1");
     Random r = new Random();
+    Scanner s = new Scanner(System.in);
     r.setSeed(4);
-    String palavra = MyIO.readLine();
+    String palavra = s.nextLine();
     String y = ""; // como não podemos utilizar nenhum auxilio da classe string, vamos criar uma
                    // variável auxiliar
 
-    while (!(palavra.charAt(0) == 'F' && palavra.charAt(1) == 'I' && palavra.charAt(2) == 'M')) {
+    while (s.hasNext()) {
       char c1 = (char) ('a' + (Math.abs(r.nextInt()) % 26));
       char c2 = (char) ('a' + (Math.abs(r.nextInt()) % 26));
 
@@ -23,10 +24,12 @@ public class AlteracaoAleatoria {
         }
       }
 
-      MyIO.println(y);
-      palavra = MyIO.readLine();
+      System.out.println(y);
+      palavra = s.nextLine();
       y = "";
     }
+
+    s.close();
 
   }
 }

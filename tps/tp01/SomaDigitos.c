@@ -16,7 +16,7 @@ int main() {
 
   int num;
 
-  while (scanf("%d", &num)) {
+  while (scanf("%d", &num) != EOF) {
     printf("%d\n", somaDigitos(num));
   }
 }
