@@ -16,6 +16,7 @@ Nesta disciplina são abordados os seguintes tópicos:
   - Heap
   - Parcial
   - Paralela
+  - etc
 - Estruturas de dados flexível (Pilha, Fila, Lista, Lista Dupla, Matriz, Coleta de Lixo)
 - Árvores binarias (Inserção, Caminhamento, Remoção)
 - Balanceamento (Tipo de rotações e AVL)
