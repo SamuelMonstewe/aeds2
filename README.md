@@ -30,6 +30,8 @@ Nesta disciplina são abordados os seguintes tópicos:
 
 ```text
 .
+├── 🎲 EstruturasDeDados/ # Implementações de diversas estruturas de dados 
+├── 📖 ProvasPraticas/     # Avaliações que tive ao longo do semestre
 ├── 📁 algoritmos/      # Implementações puras
 ├── 🖥️ tps/             # Trabalhos práticos
     ├── tp01/
