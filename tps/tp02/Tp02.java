@@ -43,7 +43,7 @@ class Restaurante {
     return id;
   }
 
-  public void setId(final int id) {
+  public void setId(int id) {
     this.id = id;
   }
 
@@ -51,7 +51,7 @@ class Restaurante {
     return nome;
   }
 
-  public void setNome(final String nome) {
+  public void setNome(String nome) {
     this.nome = nome;
   }
 
@@ -59,7 +59,7 @@ class Restaurante {
     return cidade;
   }
 
-  public void setCidade(final String cidade) {
+  public void setCidade(String cidade) {
     this.cidade = cidade;
   }
 
@@ -67,7 +67,7 @@ class Restaurante {
     return capacidade;
   }
 
-  public void setCapacidade(final int capacidade) {
+  public void setCapacidade(int capacidade) {
     this.capacidade = capacidade;
   }
 
@@ -75,7 +75,7 @@ class Restaurante {
     return notaMedia;
   }
 
-  public void setNotaMedia(final double notaMedia) {
+  public void setNotaMedia(double notaMedia) {
     this.notaMedia = notaMedia;
   }
 
@@ -83,7 +83,7 @@ class Restaurante {
     return tipoCozinha;
   }
 
-  public void setTipoCozinha(final String[] tipoCozinha) {
+  public void setTipoCozinha(String[] tipoCozinha) {
     this.tipoCozinha = tipoCozinha;
   }
 
@@ -91,7 +91,7 @@ class Restaurante {
     return faixaPreco;
   }
 
-  public void setFaixaPreco(final int faixaPreco) {
+  public void setFaixaPreco(int faixaPreco) {
     this.faixaPreco = faixaPreco;
   }
 
@@ -99,7 +99,7 @@ class Restaurante {
     return horarioAbertura;
   }
 
-  public void setHorarioAbertura(final Hora horarioAbertura) {
+  public void setHorarioAbertura(Hora horarioAbertura) {
     this.horarioAbertura = horarioAbertura;
   }
 
@@ -107,7 +107,7 @@ class Restaurante {
     return horarioFechamento;
   }
 
-  public void setHorarioFechamento(final Hora horarioFechamento) {
+  public void setHorarioFechamento(Hora horarioFechamento) {
     this.horarioFechamento = horarioFechamento;
   }
 
@@ -115,7 +115,7 @@ class Restaurante {
     return dataAbertura;
   }
 
-  public void setDataAbertura(final Data dataAbertura) {
+  public void setDataAbertura(Data dataAbertura) {
     this.dataAbertura = dataAbertura;
   }
 
@@ -123,13 +123,66 @@ class Restaurante {
     return aberto;
   }
 
-  public void setAberto(final boolean aberto) {
+  public void setAberto(boolean aberto) {
 
     this.aberto = aberto;
   }
 
-  public static Restaurante parseRestaurante(final String s) {
-    return new Restaurante(s);
+  private static String[] criarTipos(String tipos) {
+    Scanner scTiposRaw = new Scanner(tipos).useDelimiter(";");
+    int countTipos = 0;
+
+    while (scTiposRaw.hasNext()) {
+      scTiposRaw.next();
+      countTipos++;
+    }
+
+    scTiposRaw.close();
+
+    String[] tiposCozinha = new String[countTipos];
+
+    Scanner scTipos = new Scanner(tipos).useDelimiter(";");
+    for (int i = 0; scTipos.hasNext(); i++) {
+      String tipo = scTipos.next();
+      tiposCozinha[i] = tipo;
+    }
+
+    scTipos.close();
+
+    for (int i = 0; i < tiposCozinha.length; i++) {
+      System.out.println(tiposCozinha[i]);
+    }
+
+    return tiposCozinha;
+  }
+
+  public static Restaurante parseRestaurante(String s) {
+    Scanner sc = new Scanner(s).useDelimiter(",");
+    int id = sc.nextInt();
+    String nome = sc.next();
+    String cidade = sc.next();
+    int capacidade = sc.nextInt();
+    double notaMedia = sc.nextDouble();
+    String tipos = sc.next();
+    String[] tiposCozinha = criarTipos(tipos);
+    int faixaPreco = sc.next().length();
+
+    String horarios = sc.next();
+    Scanner scHorarios = new Scanner(horarios).useDelimiter("-");
+
+    Hora horarioAbertura = Hora.parseHora(scHorarios.next());
+    Hora horarioFechamento = Hora.parseHora(scHorarios.next());
+
+    scHorarios.close();
+
+    Data dataAbertura = Data.parseData(sc.next());
+    boolean aberto = Boolean.parseBoolean(sc.next());
+
+    sc.close();
+
+    return new Restaurante(id, nome, cidade, capacidade, notaMedia, tiposCozinha, faixaPreco, horarioAbertura,
+        horarioFechamento, dataAbertura, aberto);
+
   }
 }
 
@@ -137,23 +190,23 @@ class Hora {
   private int hora;
   private int minuto;
 
-  public Hora(final int hora, final int minuto) {
+  public Hora(int hora, int minuto) {
     this.hora = hora;
     this.minuto = minuto;
   }
 
-  public void setHora(final int hora) {
+  public void setHora(int hora) {
     this.hora = hora;
   }
 
-  public void setMinuto(final int minuto) {
+  public void setMinuto(int minuto) {
     this.minuto = minuto;
   }
 
-  public static Hora parseHora(final String s) {
-    final Scanner sc = new Scanner(s).useDelimiter(":");
-    final int hora = sc.nextInt();
-    final int minuto = sc.nextInt();
+  public static Hora parseHora(String s) {
+    Scanner sc = new Scanner(s).useDelimiter(":");
+    int hora = sc.nextInt();
+    int minuto = sc.nextInt();
     sc.close();
 
     return new Hora(hora, minuto);
@@ -169,29 +222,29 @@ class Data {
   private int mes;
   private int dia;
 
-  public Data(final int ano, final int mes, final int dia) {
+  public Data(int ano, int mes, int dia) {
     this.ano = ano;
     this.mes = mes;
     this.dia = dia;
   }
 
-  public void setAno(final int ano) {
+  public void setAno(int ano) {
     this.ano = ano;
   }
 
-  public void setMes(final int mes) {
+  public void setMes(int mes) {
     this.mes = mes;
   }
 
-  public void setDia(final int dia) {
+  public void setDia(int dia) {
     this.dia = dia;
   }
 
-  public static Data parseData(final String s) {
-    final Scanner sc = new Scanner(s).useDelimiter("-");
-    final int ano = sc.nextInt();
-    final int mes = sc.nextInt();
-    final int dia = sc.nextInt();
+  public static Data parseData(String s) {
+    Scanner sc = new Scanner(s).useDelimiter("-");
+    int ano = sc.nextInt();
+    int mes = sc.nextInt();
+    int dia = sc.nextInt();
     sc.close();
 
     return new Data(ano, mes, dia);
@@ -203,8 +256,11 @@ class Data {
 }
 
 class Tp02 {
-  public static void main(final String[] args) {
-    final Hora hora = Hora.parseHora("14:45");
-    System.out.println(hora.formatar());
+  public static void main(String[] args) {
+    String raw = "11:00-20:00";
+    Scanner sc = new Scanner(raw).useDelimiter("-");
+    System.out.println(sc.next());
+    sc.close();
+
   }
 }
