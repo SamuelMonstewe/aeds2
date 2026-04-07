@@ -6,7 +6,7 @@ class Restaurante {
   private String cidade;
   private int capacidade;
   private double notaMedia;
-  private String[] tipoCozinha;
+  private String[] tiposCozinha;
   private int faixaPreco;
   private Hora horarioAbertura;
   private Hora horarioFechamento;
@@ -19,7 +19,7 @@ class Restaurante {
       String cidade,
       int capacidade,
       double notaMedia,
-      String[] tipoCozinha,
+      String[] tiposCozinha,
       int faixaPreco,
       Hora horarioAbertura,
       Hora horarioFechamento,
@@ -31,7 +31,7 @@ class Restaurante {
     this.cidade = cidade;
     this.capacidade = capacidade;
     this.notaMedia = notaMedia;
-    this.tipoCozinha = tipoCozinha;
+    this.tiposCozinha = tiposCozinha;
     this.faixaPreco = faixaPreco;
     this.horarioAbertura = horarioAbertura;
     this.horarioFechamento = horarioFechamento;
@@ -80,11 +80,11 @@ class Restaurante {
   }
 
   public String[] getTipoCozinha() {
-    return tipoCozinha;
+    return tiposCozinha;
   }
 
-  public void setTipoCozinha(String[] tipoCozinha) {
-    this.tipoCozinha = tipoCozinha;
+  public void setTipoCozinha(String[] tiposCozinha) {
+    this.tiposCozinha = tiposCozinha;
   }
 
   public int getFaixaPreco() {
@@ -149,10 +149,6 @@ class Restaurante {
 
     scTipos.close();
 
-    for (int i = 0; i < tiposCozinha.length; i++) {
-      System.out.println(tiposCozinha[i]);
-    }
-
     return tiposCozinha;
   }
 
@@ -184,6 +180,36 @@ class Restaurante {
         horarioFechamento, dataAbertura, aberto);
 
   }
+
+  private String tiposCozinhaFormatado() {
+    String tiposCozinha = "";
+
+    for (int i = 0; i < this.tiposCozinha.length; i++) {
+      tiposCozinha += this.tiposCozinha[i];
+      if (i < this.tiposCozinha.length - 1) {
+        tiposCozinha += ",";
+      }
+    }
+
+    return tiposCozinha;
+  }
+
+  private String faixaPrecoFormatado() {
+    String faixaPreco = "";
+
+    for (int i = 0; i < this.faixaPreco; i++) {
+      faixaPreco += "$";
+    }
+
+    return faixaPreco;
+  }
+
+  public String formatar() {
+    return String.format("[%d ## %s ## %s ## %d ## %.1f ## [%s] ## %s ## %s-%s ## %s ## %b]", id, nome, cidade,
+        capacidade, notaMedia, tiposCozinhaFormatado(), faixaPrecoFormatado(), horarioAbertura.formatar(),
+        horarioFechamento.formatar(),
+        dataAbertura.formatar(), aberto);
+  }
 }
 
 class Hora {
@@ -213,7 +239,7 @@ class Hora {
   }
 
   public String formatar() {
-    return String.format("%d:%d", hora, minuto);
+    return String.format("%02d:%02d", hora, minuto);
   }
 }
 
@@ -257,10 +283,8 @@ class Data {
 
 class Tp02 {
   public static void main(String[] args) {
-    String raw = "11:00-20:00";
-    Scanner sc = new Scanner(raw).useDelimiter("-");
-    System.out.println(sc.next());
-    sc.close();
-
+    String rest = "1,Classic Palace Works,Zurich,168,3.9,churrasco;internacional,$$,11:00-20:00,2018-03-31,false";
+    Restaurante restaurante = Restaurante.parseRestaurante(rest);
+    System.out.println(restaurante.formatar());
   }
 }
