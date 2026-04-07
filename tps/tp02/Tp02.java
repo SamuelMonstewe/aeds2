@@ -1,5 +1,36 @@
 import java.util.Scanner;
 
+class Hora {
+  private int hora;
+  private int minuto;
+
+  public Hora(int hora, int minuto) {
+    this.hora = hora;
+    this.minuto = minuto;
+  }
+
+  public void setHora(int hora) {
+    this.hora = hora;
+  }
+
+  public void setMinuto(int minuto) {
+    this.minuto = minuto;
+  }
+
+  public static Hora parseHora(String s) {
+    Scanner sc = new Scanner(s).useDelimiter(":");
+    int hora = sc.nextInt();
+    int minuto = sc.nextInt();
+    sc.close();
+
+    return new Hora(hora, minuto);
+  }
+
+  public String formatar() {
+    return String.format("%d:%d", hora, minuto);
+  }
+}
+
 class Data {
   private int ano;
   private int mes;
@@ -40,7 +71,7 @@ class Data {
 
 class Tp02 {
   public static void main(String[] args) {
-    Data data = Data.parseData("2004-09-23");
-    System.out.println(data.formatar());
+    Hora hora = Hora.parseHora("14:45");
+    System.out.println(hora.formatar());
   }
 }
