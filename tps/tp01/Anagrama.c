@@ -15,6 +15,10 @@ int isComprimentoIgual(char *s1, char *s2) {
 
   return 1;
 }
+// o meu algoritmo (meio merda) para verificar anagrama é ver, primeiramente, se
+// as duas strings possuem comprimento igual; Caso contrário eu faço uma
+// contagem para ver se as ocorrencias de uma letra na string S1 vai ser a mesma
+// quantidade da string S2
 int isAnagrama(char *s1, char *s2) {
 
   if (!isComprimentoIgual(s1, s2)) {
@@ -25,7 +29,6 @@ int isAnagrama(char *s1, char *s2) {
   char stop = ' ';
   int teveOcorrencia = 1;
   int countOcorrenciasS1 = 0, countOcorrenciasS2 = 0;
-
   for (int i = 0; s1[i] != '\0' && teveOcorrencia; i++) {
     teveOcorrencia = 0;
     char caracter = s1[i];
@@ -68,14 +71,14 @@ int main() {
       s1[i] = entrada[i];
     }
     s1[i] = '\0';
-    // como as entradas vão ser separadas por - e espaço em branco, manipulei
-    // a variável j para cair direto no início da segunda string
-    for (k = 0, j = i + 3; entrada[j] != '\0'; j++, k++) {
+    // manipulei as entradas para pegar o inicio da segunda string e armazenar
+    // no vetor S2
+    for (k = 0, j = i + 1; entrada[j] != '\0'; j++, k++) {
       s2[k] = entrada[j];
     }
     s2[k] = '\0';
 
-    (isAnagrama(s1, s2)) ? printf("SIM") : printf("NÃO");
+    (isAnagrama(s1, s2)) ? printf("SIM") : printf("NAO");
     printf("\n");
     fgets(entrada, sizeof(entrada), stdin);
   }
