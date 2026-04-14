@@ -241,6 +241,7 @@ class ColecaoRestaurantes {
     String arquivoCSV = path;
     try (BufferedReader br = new BufferedReader(new FileReader(arquivoCSV))) {
       long totalLinhas = Files.lines(Paths.get(arquivoCSV)).count() - 1;
+      this.tamanho = (int) totalLinhas;
       String linha = br.readLine();
       int i = 0;
       this.restaurantes = new Restaurante[(int) totalLinhas];
@@ -256,7 +257,9 @@ class ColecaoRestaurantes {
   }
 
   public static ColecaoRestaurantes lerCsv() {
-    return new ColecaoRestaurantes();
+    ColecaoRestaurantes c = new ColecaoRestaurantes();
+    c.lerCsv("restaurantes.csv");
+    return c;
   }
 
 }
@@ -333,6 +336,10 @@ class Data {
 class Tp02 {
   public static void main(String[] args) {
     ColecaoRestaurantes c = ColecaoRestaurantes.lerCsv();
-    c.lerCsv("restaurantes.csv");
+    Restaurante[] r = c.getRestaurantes();
+
+    for (Restaurante res : r) {
+      System.out.println(res.formatar());
+    }
   }
 }
