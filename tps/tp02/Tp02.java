@@ -1,6 +1,8 @@
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Scanner;
 
 class Restaurante {
@@ -238,10 +240,16 @@ class ColecaoRestaurantes {
   public void lerCsv(String path) {
     String arquivoCSV = path;
     try (BufferedReader br = new BufferedReader(new FileReader(arquivoCSV))) {
+      long totalLinhas = Files.lines(Paths.get(arquivoCSV)).count() - 1;
       String linha = br.readLine();
+      int i = 0;
+      this.restaurantes = new Restaurante[(int) totalLinhas];
       while ((linha = br.readLine()) != null) {
         Restaurante restaurante = Restaurante.parseRestaurante(linha);
+        this.restaurantes[i] = restaurante;
+        i++;
       }
+
     } catch (IOException e) {
       e.printStackTrace();
     }
