@@ -1,3 +1,6 @@
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.Scanner;
 
 class Restaurante {
@@ -212,6 +215,44 @@ class Restaurante {
   }
 }
 
+class ColecaoRestaurantes {
+  private int tamanho;
+  private Restaurante[] restaurantes;
+
+  public void setTamanho(int tamanho) {
+    this.tamanho = tamanho;
+  }
+
+  public void setRestaurantes(Restaurante[] restaurantes) {
+    this.restaurantes = restaurantes;
+  }
+
+  public int getTamanho() {
+    return this.tamanho;
+  }
+
+  public Restaurante[] getRestaurantes() {
+    return this.restaurantes;
+  }
+
+  public void lerCsv(String path) {
+    String arquivoCSV = path;
+    try (BufferedReader br = new BufferedReader(new FileReader(arquivoCSV))) {
+      String linha = br.readLine();
+      while ((linha = br.readLine()) != null) {
+        Restaurante restaurante = Restaurante.parseRestaurante(linha);
+      }
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+  }
+
+  public static ColecaoRestaurantes lerCsv() {
+    return new ColecaoRestaurantes();
+  }
+
+}
+
 class Hora {
   private int hora;
   private int minuto;
@@ -283,8 +324,7 @@ class Data {
 
 class Tp02 {
   public static void main(String[] args) {
-    String rest = "1,Classic Palace Works,Zurich,168,3.9,churrasco;internacional,$$,11:00-20:00,2018-03-31,false";
-    Restaurante restaurante = Restaurante.parseRestaurante(rest);
-    System.out.println(restaurante.formatar());
+    ColecaoRestaurantes c = ColecaoRestaurantes.lerCsv();
+    c.lerCsv("restaurantes.csv");
   }
 }
