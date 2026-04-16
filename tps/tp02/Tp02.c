@@ -136,18 +136,32 @@ void formatar_restaurante(Restaurante *restaurante, char *buffer) {
 
 typedef struct {
   int tamanho;
-  Restaurante **restaurantes;
+  Restaurante *restaurantes[499];
 } Colecao_Restaurantes;
 
-void ler_csv_colecao(Colecao_Restaurantes *c, char *path) {}
+void ler_csv_colecao(Colecao_Restaurantes *c, char *path) {
+  FILE *fp = fopen(path, "r");
+  if (!fp) {
+    printf("Erro ao abrir o arquivo.\n");
+    return;
+  }
+
+  char linha[1024];
+  fgets(linha, sizeof(linha), fp);
+  int i = 0;
+  char buff[300];
+
+  while (fgets(linha, 1024, fp)) {
+    Restaurante *r = parse_restaurante(linha);
+    c->restaurantes[i] = r;
+    i++;
+  }
+
+  fclose(fp);
+}
 Colecao_Restaurantes *ler_csv() {}
 
 int main() {
-  char s[100] = "1,Classic Palace "
-                "Works,Zurich,168,3.9,churrasco;internacional,$$,11:00-20:00,"
-                "2018-03-31,false";
-  Restaurante *r = parse_restaurante(s);
-  char buffer[500];
-  formatar_restaurante(r, buffer);
-  printf("%s", buffer);
+  Colecao_Restaurantes c;
+  ler_csv_colecao(&c, "restaurantes.csv");
 }
