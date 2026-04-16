@@ -96,11 +96,43 @@ Restaurante *parse_restaurante(char *s) {
 
   r->tipos_cozinha[1][tam2] = '\0';
 
-  // printf("%s %s %s %s %s %s %d", r->tipos_cozinha[0], r->tipos_cozinha[1],
-  //        strFaixaPreco, strHorario, strDataAbertura, strAberto, r->aberto);
+  int faixaPreco = 0;
+
+  while (strFaixaPreco[faixaPreco] != '\0') {
+    faixaPreco++;
+  }
+
+  r->faixa_preco = faixaPreco;
+  // printf("%s %s %s %s %s %s %d %d", r->tipos_cozinha[0], r->tipos_cozinha[1],
+  //        strFaixaPreco, strHorario, strDataAbertura, strAberto, r->aberto,
+  //        r->faixa_preco);
   return r;
 }
-void formatar_restaurante(Restaurante *restaurante, char *buffer) {}
+void formatar_restaurante(Restaurante *restaurante, char *buffer) {
+  char dataBuff[11];
+  char faixaPreco[5];
+
+  int i = 0;
+  for (; i < restaurante->faixa_preco; i++) {
+    faixaPreco[i] = '$';
+  }
+
+  faixaPreco[i] = '\0';
+  formatar_data(&restaurante->data_abertura, dataBuff);
+
+  sprintf(buffer,
+          "[%d ## %s ## %s ## %d ## %.2lf ## [%s,%s] ## %s ## "
+          "%02d:%02d-%02d:%02d ## "
+          "%s ## %s]",
+          restaurante->id, restaurante->nome, restaurante->cidade,
+          restaurante->capacidade, restaurante->avaliacao,
+          restaurante->tipos_cozinha[0], restaurante->tipos_cozinha[1],
+          faixaPreco, restaurante->horario_abertura.hora,
+          restaurante->horario_abertura.minuto,
+          restaurante->horario_fechamento.hora,
+          restaurante->horario_fechamento.minuto, dataBuff,
+          restaurante->aberto ? "true" : "false");
+}
 
 typedef struct {
   int tamanho;
@@ -114,5 +146,8 @@ int main() {
   char s[100] = "1,Classic Palace "
                 "Works,Zurich,168,3.9,churrasco;internacional,$$,11:00-20:00,"
                 "2018-03-31,false";
-  parse_restaurante(s);
+  Restaurante *r = parse_restaurante(s);
+  char buffer[500];
+  formatar_restaurante(r, buffer);
+  printf("%s", buffer);
 }
