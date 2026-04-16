@@ -22,8 +22,15 @@ typedef struct {
   int dia;
 } Data;
 
-Data parse_data(Data *data, char *buffer) {}
-void formatar_data(Data *data, char *buffer) {}
+Data parse_data(char *s) {
+  int ano, mes, dia;
+  int lidos = sscanf(s, "%d-%d-%d", &ano, &mes, &dia);
+
+  return (Data){ano, mes, dia};
+}
+void formatar_data(Data *data, char *buffer) {
+  sprintf(buffer, "%d/%d/%d", data->dia, data->mes, data->ano);
+}
 
 typedef struct {
   int id;
