@@ -159,9 +159,11 @@ void ler_csv_colecao(Colecao_Restaurantes *c, char *path) {
 
   fclose(fp);
 }
-Colecao_Restaurantes *ler_csv() {}
-
-int main() {
-  Colecao_Restaurantes c;
-  ler_csv_colecao(&c, "restaurantes.csv");
+Colecao_Restaurantes *ler_csv() {
+  Colecao_Restaurantes *c =
+      (Colecao_Restaurantes *)malloc(sizeof(Colecao_Restaurantes));
+  ler_csv_colecao(c, "restaurantes.csv");
+  return c;
 }
+
+int main() { Colecao_Restaurantes *c = ler_csv(); }
