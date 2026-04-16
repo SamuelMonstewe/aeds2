@@ -1,12 +1,20 @@
 #include <stdio.h>
+#include <stdlib.h>
 
 typedef struct {
   int hora;
   int minuto;
 } Hora;
 
-Hora parse_hora(char *s) {}
-void formatar_hora(Hora *hora, char *buffer) {}
+Hora parse_hora(char *s) {
+  int horas, minutos;
+  int lidos = sscanf(s, "%d:%d", &horas, &minutos);
+
+  return (Hora){horas, minutos};
+}
+void formatar_hora(Hora *hora, char *buffer) {
+  sprintf(buffer, "%d:%d", hora->hora, hora->minuto);
+}
 
 typedef struct {
   int ano;
