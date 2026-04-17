@@ -329,17 +329,35 @@ class Data {
   }
 
   public String formatar() {
-    return String.format("%d/%d/%d", dia, mes, ano);
+    return String.format("%02d/%02d/%02d", dia, mes, ano);
   }
 }
 
 class Tp02 {
-  public static void main(String[] args) {
-    ColecaoRestaurantes c = ColecaoRestaurantes.lerCsv();
+  public static Restaurante pesquisaSequencialPorId(ColecaoRestaurantes c, int id) {
     Restaurante[] r = c.getRestaurantes();
-
-    for (Restaurante res : r) {
-      System.out.println(res.formatar());
+    for (Restaurante restaurante : r) {
+      if (restaurante.getId() == id) {
+        return restaurante;
+      }
     }
+
+    return null;
+  }
+
+  public static void main(String[] args) {
+    Scanner s = new Scanner(System.in);
+    ColecaoRestaurantes c = ColecaoRestaurantes.lerCsv();
+
+    int id = s.nextInt();
+
+    while (id != -1) {
+      System.out.println(pesquisaSequencialPorId(c, id).formatar());
+      id = s.nextInt();
+
+    }
+    // for (Restaurante res : r) {
+    // System.out.println(res.formatar());
+    // }
   }
 }
