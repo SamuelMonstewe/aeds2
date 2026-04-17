@@ -29,7 +29,7 @@ Data parse_data(char *s) {
   return (Data){ano, mes, dia};
 }
 void formatar_data(Data *data, char *buffer) {
-  sprintf(buffer, "%d/%d/%d", data->dia, data->mes, data->ano);
+  sprintf(buffer, "%02d/%02d/%02d", data->dia, data->mes, data->ano);
 }
 
 typedef struct {
@@ -55,8 +55,8 @@ Restaurante *parse_restaurante(char *s) {
   char strDataAbertura[11];
   char strAberto[6];
 
-  sscanf(s, "%d,%[^,],%[^,],%d,%lf,%[^,],%[^,],%[^,],%[^,],%[^,]", &r->id,
-         r->nome, r->cidade, &r->capacidade, &r->avaliacao, strTiposCozinha,
+  sscanf(s, "%d,%[^,],%[^,],%d,%lf,%[^,],%[^,],%[^,],%[^,],%s", &r->id, r->nome,
+         r->cidade, &r->capacidade, &r->avaliacao, strTiposCozinha,
          strFaixaPreco, strHorario, strDataAbertura, strAberto);
 
   strHorario[5] = '\0';
@@ -64,8 +64,7 @@ Restaurante *parse_restaurante(char *s) {
   r->horario_abertura = parse_hora(strHorario);
   r->horario_fechamento = parse_hora(strHorario + 6);
   r->data_abertura = parse_data(strDataAbertura);
-  r->aberto = strcmp("true", strAberto) ? 0 : 1;
-
+  r->aberto = (strcmp("true", strAberto) == 0);
   char t1[30];
   char t2[30];
 
@@ -121,7 +120,7 @@ void formatar_restaurante(Restaurante *restaurante, char *buffer) {
   formatar_data(&restaurante->data_abertura, dataBuff);
 
   sprintf(buffer,
-          "[%d ## %s ## %s ## %d ## %.2lf ## [%s,%s] ## %s ## "
+          "[%d ## %s ## %s ## %d ## %.1lf ## [%s,%s] ## %s ## "
           "%02d:%02d-%02d:%02d ## "
           "%s ## %s]",
           restaurante->id, restaurante->nome, restaurante->cidade,
@@ -166,4 +165,31 @@ Colecao_Restaurantes *ler_csv() {
   return c;
 }
 
-int main() { Colecao_Restaurantes *c = ler_csv(); }
+Restaurante *pesquisa_sequencial_por_id(Colecao_Restaurantes *c, int id) {
+  Restaurante **r = c->restaurantes;
+
+  for (int i = 0; i < 500; i++) {
+    if (r[i]->id == id) {
+      return r[i];
+    }
+  }
+
+  return NULL;
+}
+int main() {
+  Colecao_Restaurantes *c = ler_csv();
+  char s[100], buffer[300];
+
+  fgets(s, sizeof(s), stdin);
+
+  int id;
+  sscanf(s, "%d", &id);
+
+  while (id != -1) {
+    Restaurante *r = pesquisa_sequencial_por_id(c, id);
+    formatar_restaurante(r, buffer);
+    printf("%s\n", buffer);
+    fgets(s, sizeof(s), stdin);
+    sscanf(s, "%d", &id);
+  }
+}
