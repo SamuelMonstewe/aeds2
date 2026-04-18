@@ -1,6 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
+
+#define MATRICULA 897962
 typedef struct {
   int hora;
   int minuto;
@@ -177,10 +180,14 @@ Restaurante *pesquisa_sequencial_por_id(Colecao_Restaurantes *c, int id) {
   return NULL;
 }
 void ordenacao_por_selecao(Restaurante **r, int n) {
-
+  FILE *log;
+  log = fopen("897962_selecao.txt", "w");
+  int comp = 0, mov = 0;
+  clock_t inicio = clock();
   for (int i = 0; i < n - 1; i++) {
     int menor = i;
     for (int j = i + 1; j < n; j++) {
+      comp++;
       if (strcmp(r[j]->nome, r[menor]->nome) < 0) {
         menor = j;
       }
@@ -189,7 +196,12 @@ void ordenacao_por_selecao(Restaurante **r, int n) {
     Restaurante *tmp = r[i];
     r[i] = r[menor];
     r[menor] = tmp;
+    mov += 3;
   }
+  clock_t fim = clock();
+  double tempo_execucao = ((double)(fim - inicio)) / CLOCKS_PER_SEC;
+  fprintf(log, "%d %d %d %lf", MATRICULA, comp, mov, tempo_execucao);
+  fclose(log);
 }
 void liberar_memoria(Colecao_Restaurantes *c) {
   for (int i = 0; i < 500; i++) {
