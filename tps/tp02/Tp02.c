@@ -176,6 +176,29 @@ Restaurante *pesquisa_sequencial_por_id(Colecao_Restaurantes *c, int id) {
 
   return NULL;
 }
+void ordenacao_por_selecao(Colecao_Restaurantes *c) {
+  Restaurante **r = c->restaurantes;
+  int n = 500;
+  for (int i = 0; i < n - 1; i++) {
+    int menor = i;
+    for (int j = i + 1; j < n; j++) {
+      if (strcmp(r[j]->nome, r[menor]->nome) < 0) {
+        menor = j;
+      }
+    }
+
+    Restaurante *tmp = r[i];
+    r[i] = r[menor];
+    r[menor] = tmp;
+  }
+}
+void liberar_memoria(Colecao_Restaurantes *c) {
+  for (int i = 0; i < 500; i++) {
+    free(c->restaurantes[i]);
+  }
+
+  free(c);
+}
 int main() {
   Colecao_Restaurantes *c = ler_csv();
   char s[100], buffer[300];
@@ -192,4 +215,13 @@ int main() {
     fgets(s, sizeof(s), stdin);
     sscanf(s, "%d", &id);
   }
+  printf("\n");
+
+  ordenacao_por_selecao(c);
+  for (int i = 0; i < 500; i++) {
+    formatar_restaurante(c->restaurantes[i], buffer);
+    printf("%s\n", buffer);
+  }
+
+  liberar_memoria(c);
 }
