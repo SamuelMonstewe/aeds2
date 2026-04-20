@@ -1,5 +1,8 @@
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -345,19 +348,54 @@ class Tp02 {
     return null;
   }
 
+  public static void ordenacaoPorInsercao(Restaurante[] rs, int end) {
+    try (BufferedWriter bw = new BufferedWriter(new FileWriter("897962_insercao.txt", true))) {
+
+      int comp = 0;
+      int j;
+
+      long tempoInicial = System.nanoTime();
+      for (int i = 1; i < end; i++) {
+        Restaurante chave = rs[i];
+        j = i - 1;
+        comp++;
+        while ((j >= 0) && rs[j].getCidade().compareTo(chave.getCidade()) > 0) {
+          rs[j + 1] = rs[j];
+          j--;
+        }
+
+        rs[j + 1] = chave;
+      }
+      long tempoFinal = System.nanoTime();
+      long duracao = (tempoFinal - tempoInicial);
+      String conteudo = 897962 + " " + comp + " " + duracao / 1000000.0;
+      bw.write(conteudo);
+    } catch (IOException e) {
+      System.out.println(e);
+    }
+  }
+
   public static void main(String[] args) {
     Scanner s = new Scanner(System.in);
     ColecaoRestaurantes c = ColecaoRestaurantes.lerCsv();
 
+    // questão 4
+    Restaurante[] rs = new Restaurante[100];
+    int end = 0;
+
     int id = s.nextInt();
 
     while (id != -1) {
-      System.out.println(pesquisaSequencialPorId(c, id).formatar());
-      id = s.nextInt();
+      rs[end] = pesquisaSequencialPorId(c, id);
+      end++;
 
+      id = s.nextInt();
     }
-    // for (Restaurante res : r) {
-    // System.out.println(res.formatar());
-    // }
+
+    ordenacaoPorInsercao(rs, end);
+    for (int i = 0; i < end; i++) {
+      System.out.println(rs[i].formatar());
+    }
+    s.close();
   }
 }
