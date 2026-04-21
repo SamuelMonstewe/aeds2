@@ -339,6 +339,7 @@ class Data {
 class Tp02 {
   public static int compInsercao = 0;
   public static double tempoInsercao = 0.0;
+  public static int movInsercao = 0;
 
   public static int compSequencial = 0;
   public static double tempoSequencial = 0.0;
@@ -383,12 +384,14 @@ class Tp02 {
     for (int i = 1; i < end; i++) {
       Restaurante chave = rs[i];
       j = i - 1;
-      compInsercao++; // Acumula globalmente baseado na sua lógica original
+      compInsercao++;
       while ((j >= 0) && rs[j].getCidade().compareTo(chave.getCidade()) > 0) {
         rs[j + 1] = rs[j];
+        movInsercao++;
         j--;
       }
 
+      movInsercao++;
       rs[j + 1] = chave;
     }
 
@@ -472,6 +475,19 @@ class Tp02 {
     int end = 0;
     int id = s.nextInt();
 
+    // questão 1
+
+    // while (id != -1) {
+    // rs[end] = pesquisaSequencialPorId(c, id);
+    // end++;
+    // id = s.nextInt();
+    // }
+    // for (int i = 0; i < end; i++) {
+    // System.out.println(rs[i].formatar());
+    // }
+
+    // id = s.nextInt();
+    // }
     // questão 4
     // while (id != -1) {
     // rs[end] = pesquisaSequencialPorId(c, id);
@@ -481,6 +497,7 @@ class Tp02 {
     // }
 
     // ordenacaoPorInsercao(rs, end);
+
     // for (int i = 0; i < end; i++) {
     // System.out.println(rs[i].formatar());
     // }
@@ -510,13 +527,12 @@ class Tp02 {
     // pesquisaSequencialPorNome(rs, nomes[i], end);
     // }
 
-    // try (BufferedWriter bw = new BufferedWriter(new
-    // FileWriter("897962_insercao.txt"))) {
-    // String conteudo = "897962\t" + compInsercao + "\t" + tempoInsercao + "\n";
-    // bw.write(conteudo);
-    // } catch (IOException e) {
-    // System.out.println(e);
-    // }
+    try (BufferedWriter bw = new BufferedWriter(new FileWriter("897962_insercao.txt"))) {
+      String conteudo = "897962\t" + compInsercao + "\t" + movInsercao + "\t" + tempoInsercao + "\n";
+      bw.write(conteudo);
+    } catch (IOException e) {
+      System.out.println(e);
+    }
 
     // try (BufferedWriter bw = new BufferedWriter(new
     // FileWriter("897962_sequencial.txt"))) {
@@ -529,29 +545,31 @@ class Tp02 {
 
     // questão 7
 
-    while (id != -1) {
-      rs[end] = pesquisaSequencialPorId(c, id);
-      end++;
-      id = s.nextInt();
-    }
+    // while (id != -1) {
+    // rs[end] = pesquisaSequencialPorId(c, id);
+    // end++;
+    // id = s.nextInt();
+    // }
 
-    long tempoInicial = System.nanoTime();
+    // long tempoInicial = System.nanoTime();
 
-    ordenacaoPorMerge(rs, 0, end - 1);
+    // ordenacaoPorMerge(rs, 0, end - 1);
 
-    long tempoFinal = System.nanoTime();
-    tempoMerge += (tempoFinal - tempoInicial) / 1000000.0;
+    // long tempoFinal = System.nanoTime();
+    // tempoMerge += (tempoFinal - tempoInicial) / 1000000.0;
 
-    try (BufferedWriter bw = new BufferedWriter(new FileWriter("897962_mergesort.txt"))) {
-      String conteudo = "897962\t" + compMerge + "\t" + movMerge + "\t" + tempoMerge + "\n";
-      bw.write(conteudo);
-    } catch (IOException e) {
-      System.out.println(e);
-    }
+    // try (BufferedWriter bw = new BufferedWriter(new
+    // FileWriter("897962_mergesort.txt"))) {
+    // String conteudo = "897962\t" + compMerge + "\t" + movMerge + "\t" +
+    // tempoMerge + "\n";
+    // bw.write(conteudo);
+    // } catch (IOException e) {
+    // System.out.println(e);
+    // }
 
-    for (int i = 0; i < end; i++) {
-      System.out.println(rs[i].formatar());
-    }
+    // for (int i = 0; i < end; i++) {
+    // System.out.println(rs[i].formatar());
+    // }
     s.close();
   }
 }
