@@ -210,14 +210,49 @@ void liberar_memoria(Colecao_Restaurantes *c) {
 
   free(c);
 }
+
+void retirar_quebra_de_linha(char *x) {
+  for (int i = 0; x[i] != '\0'; i++) {
+    if (x[i] == '\n') {
+      x[i] = '\0';
+      return;
+    }
+  }
+}
+
+void printArray(Restaurante **rs, int end) {
+  char buffer[300];
+  for (int i = 0; i < end; i++) {
+    formatar_restaurante(rs[i], buffer);
+
+    printf("%s\n", buffer);
+  }
+}
+void pesquisa_binaria_por_nome(Restaurante **rs, char *x, int end) {
+  int esq = 0, dir = end - 1, resp = 0;
+  while (esq <= dir) {
+    int meio = (esq + dir) / 2;
+    int diff = strcmp(x, rs[meio]->nome);
+    if (diff == 0) {
+      resp = 1;
+      esq = dir + 1;
+    } else if (diff < 0) {
+      dir = meio - 1;
+    } else {
+      esq = meio + 1;
+    }
+  }
+
+  (resp) ? printf("SIM\n") : printf("NAO\n");
+}
 int main() {
   Colecao_Restaurantes *c = ler_csv();
   char s[100], buffer[300];
 
-  // fgets(s, sizeof(s), stdin);
+  fgets(s, sizeof(s), stdin);
 
   int id;
-  // sscanf(s, "%d", &id);
+  sscanf(s, "%d", &id);
 
   // questão 2
   // while (id != -1) {
@@ -230,31 +265,55 @@ int main() {
   // printf("\n");
 
   // questão 3
-  int *vetor = NULL;
+  // int *vetor = NULL;
 
-  fgets(s, sizeof(s), stdin);
-  int tamanho = 0;
-  sscanf(s, "%d", &id);
+  // fgets(s, sizeof(s), stdin);
+  // int tamanho = 0;
+  // sscanf(s, "%d", &id);
+
+  // while (id != -1) {
+  //   tamanho++;
+  //   vetor = (int *)realloc(vetor, sizeof(int) * tamanho);
+  //   vetor[tamanho - 1] = id;
+  //   fgets(s, sizeof(s), stdin);
+  //   sscanf(s, "%d", &id);
+  // }
+
+  // Restaurante **r = (Restaurante **)malloc(sizeof(Restaurante *) * tamanho);
+
+  // for (int i = 0; i < tamanho; i++) {
+  //   r[i] = pesquisa_sequencial_por_id(c, vetor[i]);
+  // }
+  // ordenacao_por_selecao(r, tamanho);
+  // for (int i = 0; i < tamanho; i++) {
+  //   formatar_restaurante(r[i], buffer);
+  //   printf("%s\n", buffer);
+  // }
+  // liberar_memoria(c);
+  // free(vetor);
+  // free(r);
+
+  // questão 6
+  Restaurante *rs[100];
+  int end = 0;
 
   while (id != -1) {
-    tamanho++;
-    vetor = (int *)realloc(vetor, sizeof(int) * tamanho);
-    vetor[tamanho - 1] = id;
+    rs[end] = pesquisa_sequencial_por_id(c, id);
+    end++;
     fgets(s, sizeof(s), stdin);
     sscanf(s, "%d", &id);
   }
 
-  Restaurante **r = (Restaurante **)malloc(sizeof(Restaurante *) * tamanho);
+  ordenacao_por_selecao(rs, end);
 
-  for (int i = 0; i < tamanho; i++) {
-    r[i] = pesquisa_sequencial_por_id(c, vetor[i]);
+  char nome[150];
+
+  fgets(nome, sizeof(nome), stdin);
+  retirar_quebra_de_linha(nome);
+
+  while (strcmp(nome, "FIM") != 0) {
+    pesquisa_binaria_por_nome(rs, nome, end);
+    fgets(nome, sizeof(nome), stdin);
+    retirar_quebra_de_linha(nome);
   }
-  ordenacao_por_selecao(r, tamanho);
-  for (int i = 0; i < tamanho; i++) {
-    formatar_restaurante(r[i], buffer);
-    printf("%s\n", buffer);
-  }
-  liberar_memoria(c);
-  free(vetor);
-  free(r);
 }
