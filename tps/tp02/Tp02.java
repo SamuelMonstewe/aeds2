@@ -343,6 +343,10 @@ class Tp02 {
   public static int compSequencial = 0;
   public static double tempoSequencial = 0.0;
 
+  public static int compMerge = 0;
+  public static double tempoMerge = 0.0;
+  public static int movMerge = 0;
+
   public static Restaurante pesquisaSequencialPorId(ColecaoRestaurantes c, int id) {
     Restaurante[] r = c.getRestaurantes();
     for (Restaurante restaurante : r) {
@@ -392,16 +396,83 @@ class Tp02 {
     tempoInsercao += (tempoFinal - tempoInicial) / 1000000.0;
   }
 
+  public static void merge(Restaurante[] rs, int p, int q, int r) {
+    int nl = q - p + 1;
+    int nr = r - q, i, j;
+    Restaurante[] L = new Restaurante[nl];
+    Restaurante[] R = new Restaurante[nr];
+
+    for (i = 0; i < nl; i++) {
+      L[i] = rs[p + i];
+      movMerge++;
+    }
+    for (j = 0; j < nr; j++) {
+      R[j] = rs[q + j + 1];
+      movMerge++;
+    }
+
+    i = 0;
+    j = 0;
+    int k = p;
+
+    while (i < nl && j < nr) {
+      int diffCidade = L[i].getCidade().compareTo(R[j].getCidade());
+      compMerge++;
+      if (diffCidade == 0) { // se forem iguais, temos que desempatar
+        if (L[i].getNome().compareTo(R[j].getNome()) <= 0) { // desempate pelo nome
+          rs[k] = L[i];
+          movMerge++;
+          i++;
+        } else {
+          rs[k] = R[j];
+          movMerge++;
+          j++;
+        }
+      } else if (diffCidade < 0) {
+        rs[k] = L[i];
+        movMerge++;
+        i++;
+      } else {
+        rs[k] = R[j];
+        movMerge++;
+        j++;
+      }
+      k++;
+    }
+
+    while (i < nl) {
+      rs[k] = L[i];
+      i++;
+      k++;
+      movMerge++;
+    }
+    while (j < nr) {
+      rs[k] = R[j];
+      j++;
+      k++;
+      movMerge++;
+    }
+  }
+
+  public static void ordenacaoPorMerge(Restaurante[] rs, int p, int r) {
+    if (p >= r) {
+      return;
+    }
+    int q = (p + r) / 2;
+    ordenacaoPorMerge(rs, p, q);
+    ordenacaoPorMerge(rs, q + 1, r);
+    merge(rs, p, q, r);
+  }
+
   public static void main(String[] args) {
     Scanner s = new Scanner(System.in);
     ColecaoRestaurantes c = ColecaoRestaurantes.lerCsv();
 
-    // questão 4
     Restaurante[] rs = new Restaurante[100];
     int end = 0;
-
     int id = s.nextInt();
 
+    // questão 4
     // while (id != -1) {
     // rs[end] = pesquisaSequencialPorId(c, id);
     // end++;
@@ -416,27 +487,28 @@ class Tp02 {
 
     // questão 5
 
-    while (id != -1) {
-      Restaurante res = pesquisaSequencialPorId(c, id);
-      rs[end] = res;
-      end++;
-      id = s.nextInt();
-    }
+    // while (id != -1) {
+    // Restaurante res = pesquisaSequencialPorId(c, id);
+    // rs[end] = res;
+    // end++;
+    // id = s.nextInt();
+    // }
 
-    String[] nomes = new String[100];
-    int endNomes = 0;
-    String nome = s.next();
+    // String[] nomes = new String[100];
+    // int endNomes = 0;
+    // String nome = s.next();
 
-    nome = s.nextLine();
-    while (!(nome.charAt(0) == 'F' && nome.charAt(1) == 'I' && nome.charAt(2) == 'M')) {
-      nomes[endNomes] = nome;
-      endNomes++;
-      nome = s.nextLine();
-    }
+    // nome = s.nextLine();
+    // while (!(nome.charAt(0) == 'F' && nome.charAt(1) == 'I' && nome.charAt(2) ==
+    // 'M')) {
+    // nomes[endNomes] = nome;
+    // endNomes++;
+    // nome = s.nextLine();
+    // }
 
-    for (int i = 0; i < endNomes; i++) {
-      pesquisaSequencialPorNome(rs, nomes[i], end);
-    }
+    // for (int i = 0; i < endNomes; i++) {
+    // pesquisaSequencialPorNome(rs, nomes[i], end);
+    // }
 
     // try (BufferedWriter bw = new BufferedWriter(new
     // FileWriter("897962_insercao.txt"))) {
@@ -446,13 +518,40 @@ class Tp02 {
     // System.out.println(e);
     // }
 
-    try (BufferedWriter bw = new BufferedWriter(new FileWriter("897962_sequencial.txt"))) {
-      String conteudo = "897962\t" + compSequencial + "\t" + tempoSequencial + "\n";
+    // try (BufferedWriter bw = new BufferedWriter(new
+    // FileWriter("897962_sequencial.txt"))) {
+    // String conteudo = "897962\t" + compSequencial + "\t" + tempoSequencial +
+    // "\n";
+    // bw.write(conteudo);
+    // } catch (IOException e) {
+    // System.out.println(e);
+    // }
+
+    // questão 7
+
+    while (id != -1) {
+      rs[end] = pesquisaSequencialPorId(c, id);
+      end++;
+      id = s.nextInt();
+    }
+
+    long tempoInicial = System.nanoTime();
+
+    ordenacaoPorMerge(rs, 0, end - 1);
+
+    long tempoFinal = System.nanoTime();
+    tempoMerge += (tempoFinal - tempoInicial) / 1000000.0;
+
+    try (BufferedWriter bw = new BufferedWriter(new FileWriter("897962_mergesort.txt"))) {
+      String conteudo = "897962\t" + compMerge + "\t" + movMerge + "\t" + tempoMerge + "\n";
       bw.write(conteudo);
     } catch (IOException e) {
       System.out.println(e);
     }
 
+    for (int i = 0; i < end; i++) {
+      System.out.println(rs[i].formatar());
+    }
     s.close();
   }
 }
