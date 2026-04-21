@@ -261,7 +261,7 @@ class ColecaoRestaurantes {
 
   public static ColecaoRestaurantes lerCsv() {
     ColecaoRestaurantes c = new ColecaoRestaurantes();
-    c.lerCsv("restaurantes.csv");
+    c.lerCsv("/tmp/restaurantes.csv");
     return c;
   }
 
@@ -337,10 +337,16 @@ class Data {
 }
 
 class Tp02 {
+  public static int compInsercao = 0;
+  public static double tempoInsercao = 0.0;
+
+  public static int compSequencial = 0;
+  public static double tempoSequencial = 0.0;
+
   public static Restaurante pesquisaSequencialPorId(ColecaoRestaurantes c, int id) {
     Restaurante[] r = c.getRestaurantes();
     for (Restaurante restaurante : r) {
-      if (restaurante.getId() == id) {
+      if (restaurante != null && restaurante.getId() == id) {
         return restaurante;
       }
     }
@@ -349,40 +355,41 @@ class Tp02 {
   }
 
   public static void pesquisaSequencialPorNome(Restaurante[] rs, String nome, int end) {
+    long inicio = System.nanoTime();
+
     for (int i = 0; i < end; i++) {
+      compSequencial++;
       if (rs[i].getNome().compareTo(nome) == 0) {
         System.out.println("SIM");
+        long fim = System.nanoTime();
+        tempoSequencial += (fim - inicio) / 1000000.0;
         return;
       }
     }
     System.out.println("NAO");
+
+    long fim = System.nanoTime();
+    tempoSequencial += (fim - inicio) / 1000000.0;
   }
 
   public static void ordenacaoPorInsercao(Restaurante[] rs, int end) {
-    try (BufferedWriter bw = new BufferedWriter(new FileWriter("897962_insercao.txt", true))) {
+    long tempoInicial = System.nanoTime();
+    int j;
 
-      int comp = 0;
-      int j;
-
-      long tempoInicial = System.nanoTime();
-      for (int i = 1; i < end; i++) {
-        Restaurante chave = rs[i];
-        j = i - 1;
-        comp++;
-        while ((j >= 0) && rs[j].getCidade().compareTo(chave.getCidade()) > 0) {
-          rs[j + 1] = rs[j];
-          j--;
-        }
-
-        rs[j + 1] = chave;
+    for (int i = 1; i < end; i++) {
+      Restaurante chave = rs[i];
+      j = i - 1;
+      compInsercao++; // Acumula globalmente baseado na sua lógica original
+      while ((j >= 0) && rs[j].getCidade().compareTo(chave.getCidade()) > 0) {
+        rs[j + 1] = rs[j];
+        j--;
       }
-      long tempoFinal = System.nanoTime();
-      long duracao = (tempoFinal - tempoInicial);
-      String conteudo = 897962 + " " + comp + " " + duracao / 1000000.0;
-      bw.write(conteudo);
-    } catch (IOException e) {
-      System.out.println(e);
+
+      rs[j + 1] = chave;
     }
+
+    long tempoFinal = System.nanoTime();
+    tempoInsercao += (tempoFinal - tempoInicial) / 1000000.0;
   }
 
   public static void main(String[] args) {
@@ -410,7 +417,8 @@ class Tp02 {
     // questão 5
 
     while (id != -1) {
-      rs[end] = pesquisaSequencialPorId(c, id);
+      Restaurante res = pesquisaSequencialPorId(c, id);
+      rs[end] = res;
       end++;
       id = s.nextInt();
     }
@@ -426,17 +434,20 @@ class Tp02 {
       nome = s.nextLine();
     }
 
-    try (BufferedWriter bw = new BufferedWriter(new FileWriter("897962_sequencial.txt", true))) {
-      int comp = 0;
-      long tempoInicial = System.nanoTime();
+    for (int i = 0; i < endNomes; i++) {
+      pesquisaSequencialPorNome(rs, nomes[i], end);
+    }
 
-      for (int i = 0; i < endNomes; i++) {
-        pesquisaSequencialPorNome(rs, nomes[i], end);
-      }
+    // try (BufferedWriter bw = new BufferedWriter(new
+    // FileWriter("897962_insercao.txt"))) {
+    // String conteudo = "897962\t" + compInsercao + "\t" + tempoInsercao + "\n";
+    // bw.write(conteudo);
+    // } catch (IOException e) {
+    // System.out.println(e);
+    // }
 
-      long tempoFinal = System.nanoTime();
-      long duracao = (tempoFinal - tempoInicial);
-      String conteudo = 897962 + " " + comp + " " + duracao / 1000000.0;
+    try (BufferedWriter bw = new BufferedWriter(new FileWriter("897962_sequencial.txt"))) {
+      String conteudo = "897962\t" + compSequencial + "\t" + tempoSequencial + "\n";
       bw.write(conteudo);
     } catch (IOException e) {
       System.out.println(e);

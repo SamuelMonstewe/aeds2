@@ -4,6 +4,11 @@
 #include <time.h>
 
 #define MATRICULA 897962
+int compSelecao = 0, movSelecao = 0;
+double tempoSelecao = 0;
+
+int compBinaria = 0;
+double tempoBinaria = 0;
 typedef struct {
   int hora;
   int minuto;
@@ -164,7 +169,7 @@ void ler_csv_colecao(Colecao_Restaurantes *c, char *path) {
 Colecao_Restaurantes *ler_csv() {
   Colecao_Restaurantes *c =
       (Colecao_Restaurantes *)malloc(sizeof(Colecao_Restaurantes));
-  ler_csv_colecao(c, "restaurantes.csv");
+  ler_csv_colecao(c, "/tmp/restaurantes.csv");
   return c;
 }
 
@@ -180,14 +185,11 @@ Restaurante *pesquisa_sequencial_por_id(Colecao_Restaurantes *c, int id) {
   return NULL;
 }
 void ordenacao_por_selecao(Restaurante **r, int n) {
-  FILE *log;
-  log = fopen("897962_selecao.txt", "w");
-  int comp = 0, mov = 0;
   clock_t inicio = clock();
   for (int i = 0; i < n - 1; i++) {
     int menor = i;
     for (int j = i + 1; j < n; j++) {
-      comp++;
+      compSelecao++;
       if (strcmp(r[j]->nome, r[menor]->nome) < 0) {
         menor = j;
       }
@@ -196,12 +198,10 @@ void ordenacao_por_selecao(Restaurante **r, int n) {
     Restaurante *tmp = r[i];
     r[i] = r[menor];
     r[menor] = tmp;
-    mov += 3;
+    movSelecao += 3;
   }
   clock_t fim = clock();
-  double tempo_execucao = ((double)(fim - inicio)) / CLOCKS_PER_SEC;
-  fprintf(log, "%d %d %d %lf", MATRICULA, comp, mov, tempo_execucao);
-  fclose(log);
+  tempoSelecao = ((double)(fim - inicio)) / CLOCKS_PER_SEC;
 }
 void liberar_memoria(Colecao_Restaurantes *c) {
   for (int i = 0; i < 500; i++) {
@@ -229,33 +229,30 @@ void printArray(Restaurante **rs, int end) {
   }
 }
 void pesquisa_binaria_por_nome(Restaurante **rs, char *x, int end) {
-  FILE *log;
-  log = fopen("897962_binaria.txt", "w");
-  int comp = 0;
   clock_t inicio = clock();
   int esq = 0, dir = end - 1, resp = 0;
 
   while (esq <= dir) {
     int meio = (esq + dir) / 2;
     int diff = strcmp(x, rs[meio]->nome);
-    comp++;
     if (diff == 0) {
       resp = 1;
       esq = dir + 1;
+      compBinaria++;
     } else if (diff < 0) {
-      comp++;
       dir = meio - 1;
+      compBinaria++;
     } else {
       esq = meio + 1;
+      compBinaria++;
     }
   }
 
   (resp) ? printf("SIM\n") : printf("NAO\n");
 
   clock_t fim = clock();
-  double tempo_execucao = ((double)(fim - inicio)) / CLOCKS_PER_SEC;
-  fprintf(log, "%d %d %lf", MATRICULA, comp, tempo_execucao);
-  fclose(log);
+
+  tempoBinaria += ((double)(fim - inicio)) / CLOCKS_PER_SEC;
 }
 int main() {
   Colecao_Restaurantes *c = ler_csv();
@@ -306,7 +303,7 @@ int main() {
   // free(r);
 
   // questão 6
-  Restaurante *rs[100];
+  Restaurante *rs[500];
   int end = 0;
 
   while (id != -1) {
@@ -327,5 +324,18 @@ int main() {
     pesquisa_binaria_por_nome(rs, nome, end);
     fgets(nome, sizeof(nome), stdin);
     retirar_quebra_de_linha(nome);
+  }
+
+  FILE *logS = fopen("897962_selecao.txt", "w");
+  if (logS) {
+    fprintf(logS, "%d\t%d\t%d\t%lf\n", MATRICULA, compSelecao, movSelecao,
+            tempoSelecao);
+    fclose(logS);
+  }
+
+  FILE *logB = fopen("897962_binaria.txt", "w");
+  if (logB) {
+    fprintf(logB, "%d\t%d\t%lf\n", MATRICULA, compBinaria, tempoBinaria);
+    fclose(logB);
   }
 }
