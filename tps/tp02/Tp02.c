@@ -110,9 +110,7 @@ Restaurante *parse_restaurante(char *s) {
   }
 
   r->faixa_preco = faixaPreco;
-  // printf("%s %s %s %s %s %s %d %d", r->tipos_cozinha[0], r->tipos_cozinha[1],
-  //        strFaixaPreco, strHorario, strDataAbertura, strAberto, r->aberto,
-  //        r->faixa_preco);
+
   return r;
 }
 void formatar_restaurante(Restaurante *restaurante, char *buffer) {
@@ -256,10 +254,10 @@ void pesquisa_binaria_por_nome(Restaurante **rs, char *x, int end) {
 }
 int main() {
   Colecao_Restaurantes *c = ler_csv();
-  char s[100], buffer[300];
+  char s[500], buffer[300];
+  Restaurante *rs[500];
 
   fgets(s, sizeof(s), stdin);
-
   int id;
   sscanf(s, "%d", &id);
 
@@ -274,36 +272,29 @@ int main() {
   // printf("\n");
 
   // questão 3
-  // int *vetor = NULL;
 
-  // fgets(s, sizeof(s), stdin);
-  // int tamanho = 0;
-  // sscanf(s, "%d", &id);
+  // int end = 0;
 
   // while (id != -1) {
-  //   tamanho++;
-  //   vetor = (int *)realloc(vetor, sizeof(int) * tamanho);
-  //   vetor[tamanho - 1] = id;
+  //   rs[end] = pesquisa_sequencial_por_id(c, id);
+  //   end++;
   //   fgets(s, sizeof(s), stdin);
   //   sscanf(s, "%d", &id);
   // }
-
-  // Restaurante **r = (Restaurante **)malloc(sizeof(Restaurante *) * tamanho);
-
-  // for (int i = 0; i < tamanho; i++) {
-  //   r[i] = pesquisa_sequencial_por_id(c, vetor[i]);
-  // }
-  // ordenacao_por_selecao(r, tamanho);
-  // for (int i = 0; i < tamanho; i++) {
-  //   formatar_restaurante(r[i], buffer);
+  // ordenacao_por_selecao(rs, end);
+  // for (int i = 0; i < end; i++) {
+  //   formatar_restaurante(rs[i], buffer);
   //   printf("%s\n", buffer);
   // }
-  // liberar_memoria(c);
-  // free(vetor);
-  // free(r);
+
+  // FILE *logS = fopen("897962_selecao.txt", "w");
+  // if (logS) {
+  //   fprintf(logS, "%d\t%d\t%d\t%lf\n", MATRICULA, compSelecao, movSelecao,
+  //           tempoSelecao);
+  //   fclose(logS);
+  // }
 
   // questão 6
-  Restaurante *rs[500];
   int end = 0;
 
   while (id != -1) {
@@ -315,7 +306,7 @@ int main() {
 
   ordenacao_por_selecao(rs, end);
 
-  char nome[150];
+  char nome[300];
 
   fgets(nome, sizeof(nome), stdin);
   retirar_quebra_de_linha(nome);
@@ -324,13 +315,6 @@ int main() {
     pesquisa_binaria_por_nome(rs, nome, end);
     fgets(nome, sizeof(nome), stdin);
     retirar_quebra_de_linha(nome);
-  }
-
-  FILE *logS = fopen("897962_selecao.txt", "w");
-  if (logS) {
-    fprintf(logS, "%d\t%d\t%d\t%lf\n", MATRICULA, compSelecao, movSelecao,
-            tempoSelecao);
-    fclose(logS);
   }
 
   FILE *logB = fopen("897962_binaria.txt", "w");

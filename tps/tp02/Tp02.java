@@ -471,7 +471,7 @@ class Tp02 {
     Scanner s = new Scanner(System.in);
     ColecaoRestaurantes c = ColecaoRestaurantes.lerCsv();
 
-    Restaurante[] rs = new Restaurante[100];
+    Restaurante[] rs = new Restaurante[500];
     int end = 0;
     int id = s.nextInt();
 
@@ -502,46 +502,46 @@ class Tp02 {
     // System.out.println(rs[i].formatar());
     // }
 
-    // questão 5
-
-    // while (id != -1) {
-    // Restaurante res = pesquisaSequencialPorId(c, id);
-    // rs[end] = res;
-    // end++;
-    // id = s.nextInt();
-    // }
-
-    // String[] nomes = new String[100];
-    // int endNomes = 0;
-    // String nome = s.next();
-
-    // nome = s.nextLine();
-    // while (!(nome.charAt(0) == 'F' && nome.charAt(1) == 'I' && nome.charAt(2) ==
-    // 'M')) {
-    // nomes[endNomes] = nome;
-    // endNomes++;
-    // nome = s.nextLine();
-    // }
-
-    // for (int i = 0; i < endNomes; i++) {
-    // pesquisaSequencialPorNome(rs, nomes[i], end);
-    // }
-
-    try (BufferedWriter bw = new BufferedWriter(new FileWriter("897962_insercao.txt"))) {
-      String conteudo = "897962\t" + compInsercao + "\t" + movInsercao + "\t" + tempoInsercao + "\n";
-      bw.write(conteudo);
-    } catch (IOException e) {
-      System.out.println(e);
-    }
-
     // try (BufferedWriter bw = new BufferedWriter(new
-    // FileWriter("897962_sequencial.txt"))) {
-    // String conteudo = "897962\t" + compSequencial + "\t" + tempoSequencial +
-    // "\n";
+    // FileWriter("897962_insercao.txt"))) {
+    // String conteudo = "897962\t" + compInsercao + "\t" + movInsercao + "\t" +
+    // tempoInsercao + "\n";
     // bw.write(conteudo);
     // } catch (IOException e) {
     // System.out.println(e);
     // }
+
+    // questão 5
+
+    while (id != -1) {
+      Restaurante res = pesquisaSequencialPorId(c, id);
+      rs[end] = res;
+      end++;
+      id = s.nextInt();
+    }
+
+    String[] nomes = new String[500];
+    int endNomes = 0;
+    String nome = s.next();
+
+    nome = s.nextLine();
+    while (!(nome.charAt(0) == 'F' && nome.charAt(1) == 'I' && nome.charAt(2) == 'M')) {
+      nomes[endNomes] = nome;
+      endNomes++;
+      nome = s.nextLine();
+    }
+
+    for (int i = 0; i < endNomes; i++) {
+      pesquisaSequencialPorNome(rs, nomes[i], end);
+    }
+
+    try (BufferedWriter bw = new BufferedWriter(new FileWriter("897962_sequencial.txt"))) {
+      String conteudo = "897962\t" + compSequencial + "\t" + tempoSequencial +
+          "\n";
+      bw.write(conteudo);
+    } catch (IOException e) {
+      System.out.println(e);
+    }
 
     // questão 7
 
