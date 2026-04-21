@@ -426,8 +426,20 @@ class Tp02 {
       nome = s.nextLine();
     }
 
-    for (int i = 0; i < endNomes; i++) {
-      pesquisaSequencialPorNome(rs, nomes[i], end);
+    try (BufferedWriter bw = new BufferedWriter(new FileWriter("897962_sequencial.txt", true))) {
+      int comp = 0;
+      long tempoInicial = System.nanoTime();
+
+      for (int i = 0; i < endNomes; i++) {
+        pesquisaSequencialPorNome(rs, nomes[i], end);
+      }
+
+      long tempoFinal = System.nanoTime();
+      long duracao = (tempoFinal - tempoInicial);
+      String conteudo = 897962 + " " + comp + " " + duracao / 1000000.0;
+      bw.write(conteudo);
+    } catch (IOException e) {
+      System.out.println(e);
     }
 
     s.close();
