@@ -348,6 +348,16 @@ class Tp02 {
     return null;
   }
 
+  public static void pesquisaSequencialPorNome(Restaurante[] rs, String nome, int end) {
+    for (int i = 0; i < end; i++) {
+      if (rs[i].getNome().compareTo(nome) == 0) {
+        System.out.println("SIM");
+        return;
+      }
+    }
+    System.out.println("NAO");
+  }
+
   public static void ordenacaoPorInsercao(Restaurante[] rs, int end) {
     try (BufferedWriter bw = new BufferedWriter(new FileWriter("897962_insercao.txt", true))) {
 
@@ -385,17 +395,41 @@ class Tp02 {
 
     int id = s.nextInt();
 
+    // while (id != -1) {
+    // rs[end] = pesquisaSequencialPorId(c, id);
+    // end++;
+
+    // id = s.nextInt();
+    // }
+
+    // ordenacaoPorInsercao(rs, end);
+    // for (int i = 0; i < end; i++) {
+    // System.out.println(rs[i].formatar());
+    // }
+
+    // questão 5
+
     while (id != -1) {
       rs[end] = pesquisaSequencialPorId(c, id);
       end++;
-
       id = s.nextInt();
     }
 
-    ordenacaoPorInsercao(rs, end);
-    for (int i = 0; i < end; i++) {
-      System.out.println(rs[i].formatar());
+    String[] nomes = new String[100];
+    int endNomes = 0;
+    String nome = s.next();
+
+    nome = s.nextLine();
+    while (!(nome.charAt(0) == 'F' && nome.charAt(1) == 'I' && nome.charAt(2) == 'M')) {
+      nomes[endNomes] = nome;
+      endNomes++;
+      nome = s.nextLine();
     }
+
+    for (int i = 0; i < endNomes; i++) {
+      pesquisaSequencialPorNome(rs, nomes[i], end);
+    }
+
     s.close();
   }
 }
