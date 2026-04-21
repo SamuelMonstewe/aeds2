@@ -229,14 +229,21 @@ void printArray(Restaurante **rs, int end) {
   }
 }
 void pesquisa_binaria_por_nome(Restaurante **rs, char *x, int end) {
+  FILE *log;
+  log = fopen("897962_binaria.txt", "w");
+  int comp = 0;
+  clock_t inicio = clock();
   int esq = 0, dir = end - 1, resp = 0;
+
   while (esq <= dir) {
     int meio = (esq + dir) / 2;
     int diff = strcmp(x, rs[meio]->nome);
+    comp++;
     if (diff == 0) {
       resp = 1;
       esq = dir + 1;
     } else if (diff < 0) {
+      comp++;
       dir = meio - 1;
     } else {
       esq = meio + 1;
@@ -244,6 +251,11 @@ void pesquisa_binaria_por_nome(Restaurante **rs, char *x, int end) {
   }
 
   (resp) ? printf("SIM\n") : printf("NAO\n");
+
+  clock_t fim = clock();
+  double tempo_execucao = ((double)(fim - inicio)) / CLOCKS_PER_SEC;
+  fprintf(log, "%d %d %lf", MATRICULA, comp, tempo_execucao);
+  fclose(log);
 }
 int main() {
   Colecao_Restaurantes *c = ler_csv();
