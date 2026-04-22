@@ -7,6 +7,9 @@
 int compSelecao = 0, movSelecao = 0;
 double tempoSelecao = 0;
 
+int compQuick = 0, movQuick = 0;
+double tempoQuick = 0.0;
+
 int compBinaria = 0;
 double tempoBinaria = 0;
 typedef struct {
@@ -201,6 +204,47 @@ void ordenacao_por_selecao(Restaurante **r, int n) {
   clock_t fim = clock();
   tempoSelecao = ((double)(fim - inicio)) / CLOCKS_PER_SEC;
 }
+
+int particiona(Restaurante **rs, int p, int r) {
+  Restaurante *x = rs[r]; // restaurante pivo
+  movQuick++;
+  int i = p - 1;
+
+  for (int j = p; j < r; j++) {
+    compQuick++;
+    if (x->avaliacao == rs[j]->avaliacao) { // precisa desempatar
+      compQuick++;
+      // se o nome for menor "alfabeticamente" que o nome do pivo
+      if (strcmp(rs[j]->nome, x->nome) < 0) {
+        i++;
+        Restaurante *tmp = rs[i];
+        rs[i] = rs[j];
+        rs[j] = tmp;
+        movQuick += 3;
+      }
+    } else if (rs[j]->avaliacao <= x->avaliacao) {
+      i++;
+      Restaurante *tmp = rs[i];
+      rs[i] = rs[j];
+      rs[j] = tmp;
+      compQuick++;
+      movQuick += 3;
+    }
+  }
+
+  Restaurante *aux = rs[i + 1];
+  // coloca o pivo uma casa a direita do ultimo elemento da partição de baixo
+  rs[i + 1] = rs[r];
+  rs[r] = aux;
+  return i + 1; // retorna o novo pivo
+}
+void ordenacao_por_quicksort(Restaurante **rs, int p, int r) {
+  if (p < r) {
+    int q = particiona(rs, p, r);
+    ordenacao_por_quicksort(rs, p, q - 1);
+    ordenacao_por_quicksort(rs, q + 1, r);
+  }
+}
 void liberar_memoria(Colecao_Restaurantes *c) {
   for (int i = 0; i < 500; i++) {
     free(c->restaurantes[i]);
@@ -295,31 +339,56 @@ int main() {
   // }
 
   // questão 6
-  int end = 0;
+  // int end = 0;
 
+  // while (id != -1) {
+  //   rs[end] = pesquisa_sequencial_por_id(c, id);
+  //   end++;
+  //   fgets(s, sizeof(s), stdin);
+  //   sscanf(s, "%d", &id);
+  // }
+
+  // ordenacao_por_selecao(rs, end);
+
+  // char nome[300];
+
+  // fgets(nome, sizeof(nome), stdin);
+  // retirar_quebra_de_linha(nome);
+
+  // while (strcmp(nome, "FIM") != 0) {
+  //   pesquisa_binaria_por_nome(rs, nome, end);
+  //   fgets(nome, sizeof(nome), stdin);
+  //   retirar_quebra_de_linha(nome);
+  // }
+
+  // FILE *logB = fopen("897962_binaria.txt", "w");
+  // if (logB) {
+  //   fprintf(logB, "%d\t%d\t%lf\n", MATRICULA, compBinaria, tempoBinaria);
+  //   fclose(logB);
+  // }
+
+  // questão 8
+
+  int end = 0;
   while (id != -1) {
     rs[end] = pesquisa_sequencial_por_id(c, id);
     end++;
     fgets(s, sizeof(s), stdin);
     sscanf(s, "%d", &id);
   }
-
-  ordenacao_por_selecao(rs, end);
-
-  char nome[300];
-
-  fgets(nome, sizeof(nome), stdin);
-  retirar_quebra_de_linha(nome);
-
-  while (strcmp(nome, "FIM") != 0) {
-    pesquisa_binaria_por_nome(rs, nome, end);
-    fgets(nome, sizeof(nome), stdin);
-    retirar_quebra_de_linha(nome);
+  clock_t inicio = clock();
+  ordenacao_por_quicksort(rs, 0, end - 1);
+  clock_t fim = clock();
+  for (int i = 0; i < end; i++) {
+    formatar_restaurante(rs[i], buffer);
+    printf("%s\n", buffer);
   }
+  tempoQuick += ((double)(fim - inicio)) / CLOCKS_PER_SEC;
 
-  FILE *logB = fopen("897962_binaria.txt", "w");
-  if (logB) {
-    fprintf(logB, "%d\t%d\t%lf\n", MATRICULA, compBinaria, tempoBinaria);
-    fclose(logB);
+  FILE *logC = fopen("897962_quicksort.txt", "w");
+  if (logC) {
+    fprintf(logC, "%d\t%d\t%d\t%lf\n", MATRICULA, compQuick, movQuick,
+            tempoQuick);
+    fclose(logC);
   }
 }
