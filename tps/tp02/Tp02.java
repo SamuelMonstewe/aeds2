@@ -360,6 +360,138 @@ class Data {
   }
 }
 
+class Celula {
+  Celula prox;
+  Restaurante elemento;
+}
+
+class Lista {
+  Celula primeiro;
+  Celula ultimo;
+
+  public Lista() {
+    Celula lista = new Celula();
+    primeiro = lista;
+    ultimo = lista;
+  }
+
+  public void inserirInicio(Restaurante restaurante) {
+    primeiro.elemento = restaurante;
+    Celula novoCabeca = new Celula();
+    novoCabeca.prox = primeiro;
+    primeiro = novoCabeca;
+    novoCabeca.elemento = restaurante;
+    novoCabeca = null;
+  }
+
+  public void inserir(Restaurante restaurante, int posicao) {
+    int tam = tamanho();
+    if (posicao < 0) {
+      return;
+    } else if (posicao == 0) {
+      inserirInicio(restaurante);
+    } else if (posicao == tam) {
+      inserirFim(restaurante);
+    } else {
+      Celula i = primeiro;
+      int j = 0;
+
+      while (j < posicao) {
+        i = i.prox;
+        j++;
+      }
+
+      Celula tmp = new Celula();
+      tmp.elemento = restaurante;
+      tmp.prox = i.prox;
+      i.prox = tmp;
+      i = null;
+      tmp = null;
+    }
+  }
+
+  public void inserirFim(Restaurante restaurante) {
+    Celula novo = new Celula();
+    novo.elemento = restaurante;
+    novo.prox = null;
+    ultimo.prox = novo;
+    ultimo = novo;
+    novo = null;
+  }
+
+  public Restaurante removerInicio() {
+    if (primeiro == ultimo) {
+      return null;
+    }
+
+    Celula tmp = primeiro.prox;
+    primeiro.prox = tmp.prox;
+    Restaurante r = tmp.elemento;
+    tmp.prox = null;
+    tmp = null;
+    return r;
+  }
+
+  public int tamanho() {
+    Celula i = primeiro;
+    int n = 0;
+
+    while (i.prox != null) {
+      n++;
+      i = i.prox;
+    }
+
+    return n;
+  }
+
+  public Restaurante removerFim() {
+    if (primeiro == ultimo) {
+      return null;
+    }
+
+    Celula i = primeiro;
+
+    while (i.prox != ultimo) {
+      i = i.prox;
+    }
+
+    ultimo = i;
+    Restaurante r = i.prox.elemento;
+    ultimo.prox = null;
+    i = null;
+    return r;
+  }
+
+  public Restaurante remover(int posicao) {
+    int tam = tamanho();
+    Restaurante r;
+    if (primeiro == ultimo || tam < 0 || posicao >= tam) {
+      return null;
+    } else if (posicao == 0) {
+      r = removerInicio();
+    } else if (posicao == tam - 1) {
+      r = removerFim();
+    } else {
+      Celula i = primeiro;
+      int j = 0;
+
+      while (j < posicao) {
+        i = i.prox;
+        j++;
+      }
+
+      Celula tmp = i.prox;
+      i.prox = tmp.prox;
+      r = tmp.elemento;
+      tmp.prox = null;
+      tmp = null;
+    }
+
+    return r;
+  }
+
+}
+
 class Tp02 {
   public static int compInsercao = 0;
   public static double tempoInsercao = 0.0;
