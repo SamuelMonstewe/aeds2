@@ -6,6 +6,8 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Scanner;
 
 class Restaurante {
@@ -321,6 +323,18 @@ class Data {
     this.dia = dia;
   }
 
+  public int getAno() {
+    return this.ano;
+  }
+
+  public int getMes() {
+    return this.mes;
+  }
+
+  public int getDia() {
+    return this.dia;
+  }
+
   public static Data parseData(String s) {
     Scanner sc = new Scanner(s).useDelimiter("-");
     int ano = sc.nextInt();
@@ -333,6 +347,16 @@ class Data {
 
   public String formatar() {
     return String.format("%02d/%02d/%02d", dia, mes, ano);
+  }
+
+  public int compareTo(Data outra) {
+    if (this.ano != outra.ano) {
+      return this.ano - outra.ano;
+    }
+    if (this.mes != outra.mes) {
+      return this.mes - outra.mes;
+    }
+    return this.dia - outra.dia;
   }
 }
 
@@ -347,6 +371,12 @@ class Tp02 {
   public static int compMerge = 0;
   public static double tempoMerge = 0.0;
   public static int movMerge = 0;
+
+  public static int tamanhoHeap = 0;
+
+  public static int compHeap = 0;
+  public static double tempoHeap = 0.0;
+  public static int movHeap = 0;
 
   public static Restaurante pesquisaSequencialPorId(ColecaoRestaurantes c, int id) {
     Restaurante[] r = c.getRestaurantes();
@@ -467,6 +497,69 @@ class Tp02 {
     merge(rs, p, q, r);
   }
 
+  public static int pai(int i) {
+    return (i - 1) / 2;
+  }
+
+  public static int esquerda(int i) {
+    return (2 * i) + 1;
+  }
+
+  public static int direita(int i) {
+    return (2 * i) + 2;
+  }
+
+  public static void maximizaHeap(Restaurante[] rs, int i) {
+    int l = esquerda(i);
+    int r = direita(i);
+    int maior = i;
+
+    if (l < tamanhoHeap) {
+      int comp = rs[l].getDataAbertura().compareTo(rs[maior].getDataAbertura());
+      compHeap += 2;
+      if ((comp > 0) || (comp == 0 && rs[l].getNome().compareTo(rs[maior].getNome()) > 0)) {
+        maior = l;
+      }
+    }
+
+    if (r < tamanhoHeap) {
+      int comp = rs[r].getDataAbertura().compareTo(rs[maior].getDataAbertura());
+      compHeap += 2;
+      if ((comp > 0) || (comp == 0 && rs[r].getNome().compareTo(rs[maior].getNome()) > 0)) {
+        maior = r;
+      }
+    }
+
+    if (maior != i) {
+      Restaurante tmp = rs[i];
+      rs[i] = rs[maior];
+      rs[maior] = tmp;
+      movHeap += 3;
+      maximizaHeap(rs, maior);
+    }
+  }
+
+  public static void constroiMaxHeap(Restaurante[] rs, int n) {
+    tamanhoHeap = n;
+
+    for (int i = (n / 2) - 1; i >= 0; i--) {
+      maximizaHeap(rs, i);
+    }
+  }
+
+  public static void ordenacaoPorHeap(Restaurante[] rs, int n) {
+    constroiMaxHeap(rs, n);
+
+    for (int i = n - 1; i > 0; i--) {
+      Restaurante tmp = rs[0];
+      rs[0] = rs[i];
+      rs[i] = tmp;
+      movHeap += 3;
+      tamanhoHeap--;
+      maximizaHeap(rs, 0);
+    }
+  }
+
   public static void main(String[] args) {
     Scanner s = new Scanner(System.in);
     ColecaoRestaurantes c = ColecaoRestaurantes.lerCsv();
@@ -513,35 +606,37 @@ class Tp02 {
 
     // questão 5
 
-    while (id != -1) {
-      Restaurante res = pesquisaSequencialPorId(c, id);
-      rs[end] = res;
-      end++;
-      id = s.nextInt();
-    }
+    // while (id != -1) {
+    // Restaurante res = pesquisaSequencialPorId(c, id);
+    // rs[end] = res;
+    // end++;
+    // id = s.nextInt();
+    // }
 
-    String[] nomes = new String[500];
-    int endNomes = 0;
-    String nome = s.next();
+    // String[] nomes = new String[500];
+    // int endNomes = 0;
+    // String nome = s.next();
 
-    nome = s.nextLine();
-    while (!(nome.charAt(0) == 'F' && nome.charAt(1) == 'I' && nome.charAt(2) == 'M')) {
-      nomes[endNomes] = nome;
-      endNomes++;
-      nome = s.nextLine();
-    }
+    // nome = s.nextLine();
+    // while (!(nome.charAt(0) == 'F' && nome.charAt(1) == 'I' && nome.charAt(2) ==
+    // 'M')) {
+    // nomes[endNomes] = nome;
+    // endNomes++;
+    // nome = s.nextLine();
+    // }
 
-    for (int i = 0; i < endNomes; i++) {
-      pesquisaSequencialPorNome(rs, nomes[i], end);
-    }
+    // for (int i = 0; i < endNomes; i++) {
+    // pesquisaSequencialPorNome(rs, nomes[i], end);
+    // }
 
-    try (BufferedWriter bw = new BufferedWriter(new FileWriter("897962_sequencial.txt"))) {
-      String conteudo = "897962\t" + compSequencial + "\t" + tempoSequencial +
-          "\n";
-      bw.write(conteudo);
-    } catch (IOException e) {
-      System.out.println(e);
-    }
+    // try (BufferedWriter bw = new BufferedWriter(new
+    // FileWriter("897962_sequencial.txt"))) {
+    // String conteudo = "897962\t" + compSequencial + "\t" + tempoSequencial +
+    // "\n";
+    // bw.write(conteudo);
+    // } catch (IOException e) {
+    // System.out.println(e);
+    // }
 
     // questão 7
 
@@ -570,6 +665,31 @@ class Tp02 {
     // for (int i = 0; i < end; i++) {
     // System.out.println(rs[i].formatar());
     // }
+
+    // questão 9
+
+    while (id != -1) {
+      rs[end] = pesquisaSequencialPorId(c, id);
+      end++;
+      id = s.nextInt();
+    }
+
+    long tempoInicial = System.nanoTime();
+    ordenacaoPorHeap(rs, end);
+    long tempoFinal = System.nanoTime();
+    tempoHeap += (tempoFinal - tempoInicial) / 1000000.0;
+
+    try (BufferedWriter bw = new BufferedWriter(new FileWriter("897962_heapsort.txt"))) {
+      String conteudo = "897962\t" + compHeap + "\t" + movHeap + "\t" +
+          tempoHeap + "\n";
+      bw.write(conteudo);
+    } catch (IOException e) {
+      System.out.println(e);
+    }
+
+    for (int i = 0; i < end; i++) {
+      System.out.println(rs[i].formatar());
+    }
     s.close();
   }
 }
