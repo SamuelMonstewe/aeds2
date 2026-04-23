@@ -255,13 +255,12 @@ void liberar_memoria(Colecao_Restaurantes *c) {
 
 void retirar_quebra_de_linha(char *x) {
   for (int i = 0; x[i] != '\0'; i++) {
-    if (x[i] == '\n') {
+    if (x[i] == '\n' || x[i] == '\r') {
       x[i] = '\0';
       return;
     }
   }
 }
-
 void printArray(Restaurante **rs, int end) {
   char buffer[300];
   for (int i = 0; i < end; i++) {
@@ -352,12 +351,15 @@ int main() {
 
   // char nome[300];
 
-  // fgets(nome, sizeof(nome), stdin);
-  // retirar_quebra_de_linha(nome);
+  // if (fgets(nome, sizeof(nome), stdin) != NULL) {
+  //   retirar_quebra_de_linha(nome);
+  // }
 
   // while (strcmp(nome, "FIM") != 0) {
   //   pesquisa_binaria_por_nome(rs, nome, end);
+
   //   fgets(nome, sizeof(nome), stdin);
+
   //   retirar_quebra_de_linha(nome);
   // }
 
@@ -369,26 +371,26 @@ int main() {
 
   // questão 8
 
-  int end = 0;
-  while (id != -1) {
-    rs[end] = pesquisa_sequencial_por_id(c, id);
-    end++;
-    fgets(s, sizeof(s), stdin);
-    sscanf(s, "%d", &id);
-  }
-  clock_t inicio = clock();
-  ordenacao_por_quicksort(rs, 0, end - 1);
-  clock_t fim = clock();
-  for (int i = 0; i < end; i++) {
-    formatar_restaurante(rs[i], buffer);
-    printf("%s\n", buffer);
-  }
-  tempoQuick += ((double)(fim - inicio)) / CLOCKS_PER_SEC;
+  // int end = 0;
+  // while (id != -1) {
+  //   rs[end] = pesquisa_sequencial_por_id(c, id);
+  //   end++;
+  //   fgets(s, sizeof(s), stdin);
+  //   sscanf(s, "%d", &id);
+  // }
+  // clock_t inicio = clock();
+  // ordenacao_por_quicksort(rs, 0, end - 1);
+  // clock_t fim = clock();
+  // for (int i = 0; i < end; i++) {
+  //   formatar_restaurante(rs[i], buffer);
+  //   printf("%s\n", buffer);
+  // }
+  // tempoQuick += ((double)(fim - inicio)) / CLOCKS_PER_SEC;
 
-  FILE *logC = fopen("897962_quicksort.txt", "w");
-  if (logC) {
-    fprintf(logC, "%d\t%d\t%d\t%lf\n", MATRICULA, compQuick, movQuick,
-            tempoQuick);
-    fclose(logC);
-  }
+  // FILE *logC = fopen("897962_quicksort.txt", "w");
+  // if (logC) {
+  //   fprintf(logC, "%d\t%d\t%d\t%lf\n", MATRICULA, compQuick, movQuick,
+  //           tempoQuick);
+  //   fclose(logC);
+  // }
 }
