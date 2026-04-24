@@ -293,48 +293,72 @@ void pesquisa_binaria_por_nome(Restaurante **rs, char *x, int end) {
   tempoBinaria += ((double)(fim - inicio)) / CLOCKS_PER_SEC;
 }
 
-typedef struct Celula {
-  Restaurante *elemento;
-  struct Celula *prox;
-} Celula;
+// typedef struct Celula {
+//   Restaurante *elemento;
+//   struct Celula *prox;
+// } Celula;
+
+// typedef struct Pilha {
+//   Celula *topo;
+// } Pilha;
+
+// void inserir(Pilha *pilha, Restaurante *x) {
+//   Celula *tmp = (Celula *)malloc(sizeof(Celula));
+//   if (pilha->topo == NULL) {
+//     pilha->topo = tmp;
+//     tmp->elemento = x;
+//     tmp->prox = NULL;
+//   } else {
+//     tmp->prox = pilha->topo;
+//     pilha->topo = tmp;
+//     tmp->elemento = x;
+//   }
+// }
+
+// Restaurante *remover(Pilha *pilha) {
+//   if (pilha->topo == NULL) {
+//     printf("Vazia!");
+//     return NULL;
+//   }
+//   Restaurante *el;
+//   Celula *tmp = pilha->topo;
+//   pilha->topo = tmp->prox;
+//   el = tmp->elemento;
+//   free(tmp);
+//   return el;
+// }
+// void mostrar(Pilha *pilha) {
+//   Celula *tmp = pilha->topo;
+//   char buffer[300];
+
+//   while (tmp != NULL) {
+//     formatar_restaurante(tmp->elemento, buffer);
+//     printf("%s\n", buffer);
+//     tmp = tmp->prox;
+//   }
+// }
 
 typedef struct Pilha {
-  Celula *topo;
+  Restaurante *arr[200];
+  int topo;
 } Pilha;
 
-void inserir(Pilha *pilha, Restaurante *x) {
-  Celula *tmp = (Celula *)malloc(sizeof(Celula));
-  if (pilha->topo == NULL) {
-    pilha->topo = tmp;
-    tmp->elemento = x;
-    tmp->prox = NULL;
-  } else {
-    tmp->prox = pilha->topo;
-    pilha->topo = tmp;
-    tmp->elemento = x;
-  }
+void inserir(Pilha *p, Restaurante *x) {
+  p->arr[p->topo] = x;
+  p->topo++;
 }
 
-Restaurante *remover(Pilha *pilha) {
-  if (pilha->topo == NULL) {
-    printf("Vazia!");
-    return NULL;
-  }
-  Restaurante *el;
-  Celula *tmp = pilha->topo;
-  pilha->topo = tmp->prox;
-  el = tmp->elemento;
-  free(tmp);
-  return el;
-}
-void mostrar(Pilha *pilha) {
-  Celula *tmp = pilha->topo;
-  char buffer[300];
+Restaurante *remover(Pilha *p) {
+  p->topo--;
+  Restaurante *r = p->arr[p->topo];
 
-  while (tmp != NULL) {
-    formatar_restaurante(tmp->elemento, buffer);
-    printf("%s\n", buffer);
-    tmp = tmp->prox;
+  return r;
+}
+void mostrar(Pilha *p) {
+  char buff[300];
+  for (int i = p->topo - 1; i >= 0; i--) {
+    formatar_restaurante(p->arr[i], buff);
+    printf("%s\n", buff);
   }
 }
 
@@ -438,7 +462,7 @@ int main() {
 
   // questão 12
   Pilha *pilha = (Pilha *)malloc(sizeof(Pilha));
-  pilha->topo = NULL;
+  pilha->topo = 0;
   int n, valor, size = 0;
   char comando;
   while (id != -1) {
@@ -464,5 +488,5 @@ int main() {
   }
   mostrar(pilha);
   liberar_memoria(c);
-  free(pilha);
+  // free(pilha);
 }
