@@ -491,6 +491,142 @@ class Lista {
 
 }
 
+/*
+ * 0 % 5 = 0
+ * 1 % 5 = 1
+ * 5 % 5 = 0
+ */
+class Fila {
+  public Restaurante[] fila;
+  public int inicio;
+  public int fim;
+  public int n;
+  public int tam;
+
+  public Fila(int tam) {
+    fila = new Restaurante[tam];
+    this.tam = tam;
+    this.inicio = 0;
+    this.fim = 0;
+    this.n = 0;
+  }
+
+  public Restaurante dequeue() {
+    Restaurante r = fila[inicio];
+    n--;
+    inicio = (inicio + 1) % tam;
+    return r;
+  }
+
+  public void enqueue(Restaurante r) {
+    if (this.tam == n) {
+      dequeue();
+    }
+    fila[fim] = r;
+    fim = (fim + 1) % tam;
+    n++;
+
+  }
+
+  public void imprimir() {
+    int pos = inicio;
+    for (int i = 0; i < n; i++) {
+      System.out.println(fila[pos].formatar());
+
+      pos = (pos + 1) % tam;
+    }
+  }
+
+}
+
+class ListaSequencial {
+  Restaurante[] arr;
+  int n;
+
+  public ListaSequencial() {
+    arr = new Restaurante[200];
+    n = 0;
+  }
+
+  public void inserirInicio(Restaurante r) {
+    if (arr.length == n) {
+      return;
+    }
+
+    for (int i = n; i > 0; i--) {
+      arr[i] = arr[i - 1];
+    }
+    arr[0] = r;
+    n++;
+  }
+
+  public void inserirFim(Restaurante r) {
+    if (arr.length == n) {
+      return;
+    }
+
+    arr[n++] = r;
+  }
+
+  public void inserir(Restaurante r, int pos) {
+    if (arr.length == n) {
+      return;
+    }
+
+    for (int i = n; i > pos; i--) {
+      arr[i] = arr[i - 1];
+    }
+    arr[pos] = r;
+    n++;
+
+  }
+
+  public Restaurante removerInicio() {
+    if (n == 0) {
+      return null;
+    }
+
+    Restaurante r = arr[0];
+    n--;
+
+    for (int i = 0; i < n; i++) {
+      arr[i] = arr[i + 1];
+    }
+
+    return r;
+  }
+
+  public Restaurante removerFim() {
+    if (n == 0) {
+      return null;
+    }
+
+    Restaurante r = arr[--n];
+    return r;
+  }
+
+  public Restaurante remover(int pos) {
+    if (n == 0) {
+      return null;
+    }
+
+    Restaurante r = arr[pos];
+    n--;
+
+    for (int i = pos; i < n; i++) {
+      arr[i] = arr[i + 1];
+    }
+
+    return r;
+  }
+
+  public void exibir() {
+    for (int i = 0; i < n; i++) {
+      System.out.println(arr[i].formatar());
+    }
+  }
+}
+
 class Tp02 {
   public static int compInsercao = 0;
   public static double tempoInsercao = 0.0;
@@ -824,7 +960,7 @@ class Tp02 {
     // }
 
     // questão 11
-    Lista lista = new Lista();
+    ListaSequencial lista = new ListaSequencial();
 
     while (id != -1) {
       lista.inserirFim(pesquisaSequencialPorId(c, id));
@@ -860,12 +996,40 @@ class Tp02 {
         removidos[size++] = r;
       }
     }
-
     for (int i = 0; i < size; i++) {
       System.out.println("(R)" + removidos[i].getNome());
     }
     lista.exibir();
 
+    // questão 13
+    // Fila fila = new Fila(5);
+
+    // while (id != -1) {
+    // fila.enqueue(pesquisaSequencialPorId(c, id));
+    // id = s.nextInt();
+    // }
+
+    // int n = s.nextInt(), valor, sizeInseridos = 0, sizeRemovidos = 0;
+    // char comando;
+
+    // Restaurante[] inseridos = new Restaurante[n];
+    // Restaurante[] removidos = new Restaurante[n];
+
+    // for (int i = 0; i < n; i++) {
+    // comando = s.next().charAt(0);
+
+    // if (comando == 'I') {
+    // valor = s.nextInt();
+    // Restaurante r = pesquisaSequencialPorId(c, valor);
+    // fila.enqueue(r);
+    // inseridos[sizeInseridos++] = r;
+    // } else if (comando == 'R') {
+    // Restaurante r = fila.dequeue();
+    // removidos[sizeRemovidos++] = r;
+    // }
+    // }
+
+    // fila.imprimir();
     s.close();
   }
 }
