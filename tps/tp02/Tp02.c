@@ -292,6 +292,51 @@ void pesquisa_binaria_por_nome(Restaurante **rs, char *x, int end) {
 
   tempoBinaria += ((double)(fim - inicio)) / CLOCKS_PER_SEC;
 }
+
+typedef struct Celula {
+  Restaurante *elemento;
+  struct Celula *prox;
+} Celula;
+
+typedef struct Pilha {
+  Celula *topo;
+} Pilha;
+
+void inserir(Pilha *pilha, Restaurante *x) {
+  Celula *tmp = (Celula *)malloc(sizeof(Celula));
+  if (pilha->topo == NULL) {
+    pilha->topo = tmp;
+    tmp->elemento = x;
+    tmp->prox = NULL;
+  } else {
+    tmp->prox = pilha->topo;
+    pilha->topo = tmp;
+    tmp->elemento = x;
+  }
+}
+
+Restaurante *remover(Pilha *pilha) {
+  if (pilha->topo == NULL) {
+    printf("Vazia!");
+    return NULL;
+  }
+  Restaurante *el;
+  Celula *tmp = pilha->topo;
+  pilha->topo = tmp->prox;
+  el = tmp->elemento;
+  free(tmp);
+  return el;
+}
+void mostrar(Pilha *pilha) {
+  Celula *tmp = pilha->topo;
+  char buffer[300];
+
+  while (tmp != NULL) {
+    formatar_restaurante(tmp->elemento, buffer);
+    printf("%s\n", buffer);
+    tmp = tmp->prox;
+  }
+}
 int main() {
   Colecao_Restaurantes *c = ler_csv();
   char s[500], buffer[300];
@@ -389,4 +434,34 @@ int main() {
   //           tempoQuick);
   //   fclose(logC);
   // }
+
+  // questão 12
+  Pilha *pilha = (Pilha *)malloc(sizeof(Pilha));
+  pilha->topo = NULL;
+  int n, valor, size = 0;
+  char comando;
+  while (id != -1) {
+    inserir(pilha, pesquisa_sequencial_por_id(c, id));
+    fgets(s, sizeof(s), stdin);
+    sscanf(s, "%d", &id);
+  }
+  scanf("%d", &n);
+  Restaurante *removidos[n];
+  for (int i = 0; i < n; i++) {
+    scanf(" %c", &comando);
+
+    if (comando == 'I') {
+      scanf("%d", &valor);
+      inserir(pilha, pesquisa_sequencial_por_id(c, valor));
+    } else if (comando == 'R') {
+      removidos[size++] = remover(pilha);
+    }
+  }
+
+  for (int j = 0; j < size; j++) {
+    printf("(R)%s\n", removidos[j]->nome);
+  }
+  mostrar(pilha);
+  liberar_memoria(c);
+  free(pilha);
 }
