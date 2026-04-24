@@ -337,6 +337,7 @@ void mostrar(Pilha *pilha) {
     tmp = tmp->prox;
   }
 }
+
 int main() {
   Colecao_Restaurantes *c = ler_csv();
   char s[500], buffer[300];
