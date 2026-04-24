@@ -81,15 +81,14 @@ Restaurante *parse_restaurante(char *s) {
 
   sscanf(strTiposCozinha, "%[^;];%[^\n]", t1, t2);
 
-  int tam1 = 0;
-  while (t1[tam1] != '\0') {
-    tam1++;
-  }
+  int tam1;
+  for (tam1 = 0; t1[tam1]; tam1++)
+    ;
 
-  int tam2 = 0;
-  while (t2[tam2] != '\0') {
-    tam2++;
-  }
+  int tam2;
+
+  for (tam2 = 0; t2[tam2]; tam2++)
+    ;
 
   r->tipos_cozinha[0] = (char *)malloc(tam1 + 1 * sizeof(char));
   r->tipos_cozinha[1] = (char *)malloc(tam2 + 1 * sizeof(char));
@@ -261,12 +260,10 @@ void retirar_quebra_de_linha(char *x) {
     }
   }
 }
-void printArray(Restaurante **rs, int end) {
+void print_restaurantes(Restaurante *rs[], int end) {
   char buffer[300];
-  for (int i = 0; i < end; i++) {
-    formatar_restaurante(rs[i], buffer);
-
-    printf("%s\n", buffer);
+  while (end-- > 0) {
+    formatar_restaurante(*rs++, buffer);
   }
 }
 void pesquisa_binaria_por_nome(Restaurante **rs, char *x, int end) {
@@ -325,10 +322,8 @@ int main() {
   //   sscanf(s, "%d", &id);
   // }
   // ordenacao_por_selecao(rs, end);
-  // for (int i = 0; i < end; i++) {
-  //   formatar_restaurante(rs[i], buffer);
-  //   printf("%s\n", buffer);
-  // }
+
+  // print_restaurantes(rs, end)
 
   // FILE *logS = fopen("897962_selecao.txt", "w");
   // if (logS) {
@@ -385,6 +380,7 @@ int main() {
   //   formatar_restaurante(rs[i], buffer);
   //   printf("%s\n", buffer);
   // }
+  // print_restaurantes(rs, end);
   // tempoQuick += ((double)(fim - inicio)) / CLOCKS_PER_SEC;
 
   // FILE *logC = fopen("897962_quicksort.txt", "w");
