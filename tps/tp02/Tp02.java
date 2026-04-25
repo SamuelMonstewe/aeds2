@@ -520,7 +520,7 @@ class Fila {
 
   public void enqueue(Restaurante r) {
     if (this.tam == n) {
-      dequeue();
+      System.out.println("(R)" + dequeue().getNome());
     }
     fila[fim] = r;
     fim = (fim + 1) % tam;
@@ -537,6 +537,16 @@ class Fila {
     }
   }
 
+  public int getMediaAno() {
+    int pos = inicio, soma = 0;
+    for (int i = 0; i < n; i++) {
+      soma += fila[pos].getDataAbertura().getAno();
+
+      pos = (pos + 1) % tam;
+    }
+
+    return (int) Math.round((double) soma / n);
+  }
 }
 
 class ListaSequencial {
@@ -960,76 +970,74 @@ class Tp02 {
     // }
 
     // questão 11
-    ListaSequencial lista = new ListaSequencial();
-
-    while (id != -1) {
-      lista.inserirFim(pesquisaSequencialPorId(c, id));
-      end++;
-      id = s.nextInt();
-    }
-
-    int n = s.nextInt(), pos, valor, size = 0;
-    Restaurante[] removidos = new Restaurante[100];
-    String comando;
-    for (int i = 0; i < n; i++) {
-      comando = s.next();
-
-      if (comando.compareTo("II") == 0) {
-        valor = s.nextInt();
-        lista.inserirInicio(pesquisaSequencialPorId(c, valor));
-      } else if (comando.compareTo("I*") == 0) {
-        pos = s.nextInt();
-        valor = s.nextInt();
-        lista.inserir(pesquisaSequencialPorId(c, valor), pos);
-      } else if (comando.compareTo("IF") == 0) {
-        valor = s.nextInt();
-        lista.inserirFim(pesquisaSequencialPorId(c, valor));
-      } else if (comando.compareTo("RI") == 0) {
-        Restaurante r = lista.removerInicio();
-        removidos[size++] = r;
-      } else if (comando.compareTo("R*") == 0) {
-        pos = s.nextInt();
-        Restaurante r = lista.remover(pos);
-        removidos[size++] = r;
-      } else if (comando.compareTo("RF") == 0) {
-        Restaurante r = lista.removerFim();
-        removidos[size++] = r;
-      }
-    }
-    for (int i = 0; i < size; i++) {
-      System.out.println("(R)" + removidos[i].getNome());
-    }
-    lista.exibir();
-
-    // questão 13
-    // Fila fila = new Fila(5);
+    // ListaSequencial lista = new ListaSequencial();
 
     // while (id != -1) {
-    // fila.enqueue(pesquisaSequencialPorId(c, id));
+    // lista.inserirFim(pesquisaSequencialPorId(c, id));
+    // end++;
     // id = s.nextInt();
     // }
 
-    // int n = s.nextInt(), valor, sizeInseridos = 0, sizeRemovidos = 0;
-    // char comando;
-
-    // Restaurante[] inseridos = new Restaurante[n];
-    // Restaurante[] removidos = new Restaurante[n];
-
+    // int n = s.nextInt(), pos, valor, size = 0;
+    // Restaurante[] removidos = new Restaurante[100];
+    // String comando;
     // for (int i = 0; i < n; i++) {
-    // comando = s.next().charAt(0);
+    // comando = s.next();
 
-    // if (comando == 'I') {
+    // if (comando.compareTo("II") == 0) {
     // valor = s.nextInt();
-    // Restaurante r = pesquisaSequencialPorId(c, valor);
-    // fila.enqueue(r);
-    // inseridos[sizeInseridos++] = r;
-    // } else if (comando == 'R') {
-    // Restaurante r = fila.dequeue();
-    // removidos[sizeRemovidos++] = r;
+    // lista.inserirInicio(pesquisaSequencialPorId(c, valor));
+    // } else if (comando.compareTo("I*") == 0) {
+    // pos = s.nextInt();
+    // valor = s.nextInt();
+    // lista.inserir(pesquisaSequencialPorId(c, valor), pos);
+    // } else if (comando.compareTo("IF") == 0) {
+    // valor = s.nextInt();
+    // lista.inserirFim(pesquisaSequencialPorId(c, valor));
+    // } else if (comando.compareTo("RI") == 0) {
+    // Restaurante r = lista.removerInicio();
+    // removidos[size++] = r;
+    // } else if (comando.compareTo("R*") == 0) {
+    // pos = s.nextInt();
+    // Restaurante r = lista.remover(pos);
+    // removidos[size++] = r;
+    // } else if (comando.compareTo("RF") == 0) {
+    // Restaurante r = lista.removerFim();
+    // removidos[size++] = r;
     // }
     // }
+    // for (int i = 0; i < size; i++) {
+    // System.out.println("(R)" + removidos[i].getNome());
+    // }
+    // lista.exibir();
 
-    // fila.imprimir();
+    // questão 13
+    Fila fila = new Fila(5);
+
+    while (id != -1) {
+      fila.enqueue(pesquisaSequencialPorId(c, id));
+      System.out.println("(I)" + fila.getMediaAno());
+      id = s.nextInt();
+    }
+
+    int n = s.nextInt(), valor;
+    char comando;
+
+    for (int i = 0; i < n; i++) {
+      comando = s.next().charAt(0);
+
+      if (comando == 'I') {
+        valor = s.nextInt();
+        Restaurante r = pesquisaSequencialPorId(c, valor);
+        fila.enqueue(r);
+        System.out.println("(I)" + fila.getMediaAno());
+      } else if (comando == 'R') {
+        Restaurante r = fila.dequeue();
+        System.out.println("(R)" + r.getNome());
+      }
+    }
+
+    fila.imprimir();
     s.close();
   }
 }
