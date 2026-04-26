@@ -264,6 +264,7 @@ void print_restaurantes(Restaurante *rs[], int end) {
   char buffer[300];
   while (end-- > 0) {
     formatar_restaurante(*rs++, buffer);
+    printf("%s\n", buffer);
   }
 }
 void pesquisa_binaria_por_nome(Restaurante **rs, char *x, int end) {
@@ -362,13 +363,48 @@ void mostrar(Pilha *p) {
   }
 }
 
+int get_maior_capacidade(Restaurante *rs[], int end) {
+  int maior = rs[0]->capacidade;
+  int n = 0, atual;
+
+  for (int i = 0; i < end; i++) {
+    atual = rs[i]->capacidade;
+    if (atual > maior) {
+      maior = atual;
+    }
+  }
+
+  return maior;
+}
+
+void counting_sort(Restaurante *A[], Restaurante *B[], int n, int k) {
+
+  int C[k], i, j;
+
+  for (i = 0; i < k; i++) {
+    C[i] = 0;
+  }
+
+  for (j = 0; j < n; j++) {
+    C[A[j]->capacidade] = C[A[j]->capacidade] + 1;
+  }
+
+  for (i = 1; i < k; i++) {
+    C[i] = C[i] + C[i - 1];
+  }
+  for (j = n - 1; j >= 0; j--) {
+    B[C[A[j]->capacidade] - 1] = A[j];
+    C[A[j]->capacidade] = C[A[j]->capacidade] - 1;
+  }
+}
+
 int main() {
   Colecao_Restaurantes *c = ler_csv();
   char s[500], buffer[300];
   Restaurante *rs[500];
 
   fgets(s, sizeof(s), stdin);
-  int id;
+  int id = 0;
   sscanf(s, "%d", &id);
 
   // questão 2
@@ -460,33 +496,49 @@ int main() {
   //   fclose(logC);
   // }
 
-  // questão 12
-  Pilha *pilha = (Pilha *)malloc(sizeof(Pilha));
-  pilha->topo = 0;
-  int n, valor, size = 0;
-  char comando;
+  // questão 10
+  int n = 0;
+  Restaurante *A[500];
+
   while (id != -1) {
-    inserir(pilha, pesquisa_sequencial_por_id(c, id));
+    A[n++] = pesquisa_sequencial_por_id(c, id);
     fgets(s, sizeof(s), stdin);
     sscanf(s, "%d", &id);
   }
-  scanf("%d", &n);
-  Restaurante *removidos[n];
-  for (int i = 0; i < n; i++) {
-    scanf(" %c", &comando);
 
-    if (comando == 'I') {
-      scanf("%d", &valor);
-      inserir(pilha, pesquisa_sequencial_por_id(c, valor));
-    } else if (comando == 'R') {
-      removidos[size++] = remover(pilha);
-    }
-  }
+  int k = get_maior_capacidade(A, n);
+  Restaurante *B[n];
+  counting_sort(A, B, n, ++k);
 
-  for (int j = 0; j < size; j++) {
-    printf("(R)%s\n", removidos[j]->nome);
-  }
-  mostrar(pilha);
-  liberar_memoria(c);
+  print_restaurantes(B, n);
+  // questão 12
+  // Pilha *pilha = (Pilha *)malloc(sizeof(Pilha));
+  // pilha->topo = 0;
+  // int n, valor, size = 0;
+  // char comando;
+  // while (id != -1) {
+  //   inserir(pilha, pesquisa_sequencial_por_id(c, id));
+  //   fgets(s, sizeof(s), stdin);
+  //   sscanf(s, "%d", &id);
+  // }
+  // scanf("%d", &n);
+  // Restaurante *removidos[n];
+  // for (int i = 0; i < n; i++) {
+  //   scanf(" %c", &comando);
+
+  //   if (comando == 'I') {
+  //     scanf("%d", &valor);
+  //     inserir(pilha, pesquisa_sequencial_por_id(c, valor));
+  //   } else if (comando == 'R') {
+  //     removidos[size++] = remover(pilha);
+  //   }
+  // }
+
+  // for (int j = 0; j < size; j++) {
+  //   printf("(R)%s\n", removidos[j]->nome);
+  // }
+  // mostrar(pilha);
   // free(pilha);
+
+  liberar_memoria(c);
 }
