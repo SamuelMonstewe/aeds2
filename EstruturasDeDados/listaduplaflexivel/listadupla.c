@@ -91,6 +91,59 @@ void mostrar(struct Lista *lista) {
   printf("]");
 }
 
+int removerFim(struct Lista *lista) {
+  if (lista->primeiro == lista->ultimo) {
+    exit(1);
+  }
+
+  lista->ultimo = lista->ultimo->ant;
+  int el = lista->ultimo->prox->elemento;
+  free(lista->ultimo->prox);
+  lista->ultimo->prox = NULL;
+
+  return el;
+}
+
+int removerInicio(struct Lista *lista) {
+  if (lista->primeiro == lista->ultimo) {
+    exit(1);
+  }
+
+  int el = lista->primeiro->prox->elemento;
+  lista->primeiro->prox = lista->primeiro->prox->prox;
+  free(lista->primeiro->prox->ant);
+  lista->primeiro->prox->ant = lista->primeiro;
+
+  return el;
+}
+
+int remover(struct Lista *lista, int pos) {
+  int tam = tamanho(lista);
+  int el;
+  if (lista->primeiro == lista->ultimo || pos >= tam || pos < 0) {
+    exit(1);
+  } else if (pos == 0) {
+    el = removerInicio(lista);
+  } else if (pos == tam - 1) {
+    el = removerFim(lista);
+  } else {
+    struct Celula *tmp = lista->primeiro;
+    int j = 0;
+
+    while (j <= pos) {
+      tmp = tmp->prox;
+      j++;
+    }
+
+    el = tmp->elemento;
+    tmp->ant->prox = tmp->prox;
+    tmp->prox->ant = tmp->ant;
+    tmp->ant = NULL;
+    tmp->prox = NULL;
+    free(tmp);
+  }
+  return el;
+}
 void liberar_memoria(struct Lista *lista) {
   struct Celula *current = lista->primeiro;
   struct Celula *tmp = current->prox;
@@ -115,8 +168,7 @@ int main() {
   inserirFim(lista, 4);
   inserirFim(lista, 5);
   inserirInicio(lista, 0);
-  inserir(lista, 7, 1);
-  inserir(lista, 8, 10);
+  printf("%d\n", remover(lista, 1));
   mostrar(lista);
   liberar_memoria(lista);
 }
