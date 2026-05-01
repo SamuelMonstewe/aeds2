@@ -69,18 +69,36 @@ void inserir(struct Arvore *T, struct No *z) { // O(h)
     y->dir = z;
   }
 }
+
+struct No *inserirRecursivo(struct No *raiz, struct No *z) {
+  struct No *x = raiz;
+
+  // se x for null, encontramos uma posição para z
+  if (x != NULL) {
+    if (z->elemento < x->elemento) {
+      x->esq = inserirRecursivo(x->esq, z);
+      return x;
+    } else {
+      x->dir = inserirRecursivo(x->dir, z);
+      return x;
+    }
+  }
+
+  return z;
+}
+
 int main() {
   struct Arvore *T = (struct Arvore *)malloc(sizeof(struct Arvore));
   T->root = NULL;
-  int A[] = {6, 7, 8, 5, 5, 2};
+  int A[] = {12, 18, 15, 17, 19, 5, 9, 2};
   int i = 0;
-  while (i < 6) {
+  while (i < 8) {
     struct No *no = (struct No *)malloc(sizeof(struct No));
     no->elemento = A[i];
     no->dir = NULL;
     no->esq = NULL;
     no->pai = NULL;
-    inserir(T, no);
+    T->root = inserirRecursivo(T->root, no);
     i++;
   }
   percurso_em_ordem(T->root);
