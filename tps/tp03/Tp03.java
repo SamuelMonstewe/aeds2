@@ -863,6 +863,45 @@ class Tp03 {
 
   }
 
+  public static int particiona(Restaurante[] rs, int p, int r) {
+    Restaurante x = rs[r]; // pivo
+
+    int i = p - 1;
+
+    for (int j = p; j < r; j++) {
+      if (x.getNotaMedia() == rs[j].getNotaMedia()) {
+        if (rs[j].getNome().compareTo(x.getNome()) < 0) {
+          i++;
+          Restaurante tmp = rs[i];
+          rs[i] = rs[j];
+          rs[j] = tmp;
+        }
+      } else if (rs[j].getNotaMedia() <= x.getNotaMedia()) {
+        i++;
+        Restaurante tmp = rs[i];
+        rs[i] = rs[j];
+        rs[j] = tmp;
+      }
+    }
+    Restaurante aux = rs[i + 1];
+    rs[i + 1] = rs[r];
+    rs[r] = aux;
+    return i + 1;
+  }
+
+  public static void quicksort(Restaurante[] rs, int p, int r, int k) {
+    if (p < r) {
+      int q = particiona(rs, p, r);
+      if (q >= k) {
+        quicksort(rs, p, q - 1, k);
+      } else {
+        quicksort(rs, p, q - 1, k);
+        quicksort(rs, q + 1, r, k);
+
+      }
+    }
+  }
+
   public static void main(String[] args) {
     Scanner s = new Scanner(System.in);
     ColecaoRestaurantes c = ColecaoRestaurantes.lerCsv();
@@ -870,6 +909,21 @@ class Tp03 {
     Restaurante[] rs = new Restaurante[500];
 
     // questão 1
+    // int end = 0;
+    // int id = s.nextInt();
+
+    // while (id != -1) {
+    // rs[end++] = pesquisaSequencialPorId(c, id);
+    // id = s.nextInt();
+    // }
+
+    // int k = 10;
+    // ordenacaoPorSelecao(rs, ++k, end);
+
+    // for (int i = 0; i < end; i++) {
+    // System.out.println(rs[i].formatar());
+    // }
+
     int end = 0;
     int id = s.nextInt();
 
@@ -879,7 +933,7 @@ class Tp03 {
     }
 
     int k = 10;
-    ordenacaoPorSelecao(rs, ++k, end);
+    quicksort(rs, 0, end - 1, k);
 
     for (int i = 0; i < end; i++) {
       System.out.println(rs[i].formatar());
