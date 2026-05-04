@@ -200,24 +200,136 @@ Restaurante *pesquisa_sequencial_por_id(Colecao_Restaurantes *c, int id) {
 
   return NULL;
 }
-void ordenacao_por_selecao(Restaurante **r, int n) {
-  clock_t inicio = clock();
-  for (int i = 0; i < n - 1; i++) {
-    int menor = i;
-    for (int j = i + 1; j < n; j++) {
-      compSelecao++;
-      if (strcmp(r[j]->nome, r[menor]->nome) < 0) {
-        menor = j;
-      }
+
+typedef struct Celula {
+  struct Celula *prox;
+  Restaurante *elemento;
+} Celula;
+
+typedef struct Lista {
+  Celula *primeiro;
+  Celula *ultimo;
+} Lista;
+
+int tamanho(Lista *lista) {
+  Celula *tmp = lista->primeiro->prox;
+  int n = 0;
+
+  while (tmp != NULL) {
+    n++;
+    tmp = tmp->prox;
+  }
+  return n;
+}
+void inserirInicio(Lista *lista, Restaurante *r) {
+  lista->primeiro->elemento = r; // antigo cabeça recebe o restaurante
+  Celula *novoCabeca = (Celula *)malloc(sizeof(Celula));
+  novoCabeca->prox = lista->primeiro;
+  lista->primeiro = novoCabeca;
+
+  novoCabeca = NULL;
+}
+
+void inserirFim(Lista *lista, Restaurante *r) {
+  Celula *nova = (Celula *)malloc(sizeof(Celula));
+  nova->elemento = r;
+  nova->prox = NULL;
+  lista->ultimo->prox = nova;
+  lista->ultimo = nova;
+}
+void inserir(Lista *lista, Restaurante *r, int posicao) {
+  int tam = tamanho(lista);
+
+  if (posicao < 0 || posicao > tam) {
+    return;
+  } else if (posicao == 0) {
+    inserirInicio(lista, r);
+  } else if (posicao == tam) {
+    inserirFim(lista, r);
+  } else {
+    Celula *i = lista->primeiro;
+    for (int j = 0; j < posicao; j++) {
+      i = i->prox;
     }
 
-    Restaurante *tmp = r[i];
-    r[i] = r[menor];
-    r[menor] = tmp;
-    movSelecao += 3;
+    Celula *tmp = (Celula *)malloc(sizeof(Celula));
+    tmp->elemento = r;
+    tmp->prox = i->prox;
+    i->prox = tmp;
+
+    tmp = NULL;
   }
-  clock_t fim = clock();
-  tempoSelecao = ((double)(fim - inicio)) / CLOCKS_PER_SEC;
+}
+
+Restaurante *removerInicio(Lista *lista) {
+  if (lista->primeiro == lista->ultimo) {
+    return NULL;
+  }
+
+  // aqui eu faço uma exclusão lógica
+  Celula *tmp = lista->primeiro;
+  lista->primeiro = lista->primeiro->prox;
+  free(tmp);
+  tmp = NULL;
+
+  return lista->primeiro->elemento;
+}
+
+Restaurante *removerFim(Lista *lista) {
+  if (lista->primeiro == lista->ultimo) {
+    return NULL;
+  }
+
+  Celula *tmp = lista->primeiro;
+
+  while (tmp->prox != lista->ultimo) {
+    tmp = tmp->prox;
+  }
+
+  lista->ultimo = tmp;
+  Restaurante *r = tmp->prox->elemento;
+  lista->ultimo->prox = NULL;
+  free(tmp->prox);
+
+  return r;
+}
+
+Restaurante *remover(Lista *lista, int posicao) {
+  int tam = tamanho(lista);
+  Restaurante *r;
+  if (lista->primeiro == lista->ultimo || tam < 0 || posicao >= tam) {
+    return NULL;
+  } else if (posicao == 0) {
+    r = removerInicio(lista);
+  } else if (posicao == tam - 1) {
+    r = removerFim(lista);
+  } else {
+    Celula *i = lista->primeiro;
+    int j = 0;
+
+    while (j < posicao) {
+      i = i->prox;
+      j++;
+    }
+
+    Celula *tmp = i->prox;
+    r = tmp->elemento;
+
+    i->prox = tmp->prox;
+    free(tmp);
+  }
+  return r;
+}
+
+void mostrar(Lista *lista) {
+  Celula *i = lista->primeiro->prox;
+  char buffer[300];
+
+  while (i != NULL) {
+    formatar_restaurante(i->elemento, buffer);
+    printf("%s\n", buffer);
+    i = i->prox;
+  }
 }
 
 int particiona(Restaurante **rs, int p, int r) {
@@ -283,101 +395,6 @@ void print_restaurantes(Restaurante *rs[], int end) {
     printf("%s\n", buffer);
   }
 }
-void pesquisa_binaria_por_nome(Restaurante **rs, char *x, int end) {
-  clock_t inicio = clock();
-  int esq = 0, dir = end - 1, resp = 0;
-
-  while (esq <= dir) {
-    int meio = (esq + dir) / 2;
-    int diff = strcmp(x, rs[meio]->nome);
-    if (diff == 0) {
-      resp = 1;
-      esq = dir + 1;
-      compBinaria++;
-    } else if (diff < 0) {
-      dir = meio - 1;
-      compBinaria++;
-    } else {
-      esq = meio + 1;
-      compBinaria++;
-    }
-  }
-
-  (resp) ? printf("SIM\n") : printf("NAO\n");
-
-  clock_t fim = clock();
-
-  tempoBinaria += ((double)(fim - inicio)) / CLOCKS_PER_SEC;
-}
-
-// typedef struct Celula {
-//   Restaurante *elemento;
-//   struct Celula *prox;
-// } Celula;
-
-// typedef struct Pilha {
-//   Celula *topo;
-// } Pilha;
-
-// void inserir(Pilha *pilha, Restaurante *x) {
-//   Celula *tmp = (Celula *)malloc(sizeof(Celula));
-//   if (pilha->topo == NULL) {
-//     pilha->topo = tmp;
-//     tmp->elemento = x;
-//     tmp->prox = NULL;
-//   } else {
-//     tmp->prox = pilha->topo;
-//     pilha->topo = tmp;
-//     tmp->elemento = x;
-//   }
-// }
-
-// Restaurante *remover(Pilha *pilha) {
-//   if (pilha->topo == NULL) {
-//     printf("Vazia!");
-//     return NULL;
-//   }
-//   Restaurante *el;
-//   Celula *tmp = pilha->topo;
-//   pilha->topo = tmp->prox;
-//   el = tmp->elemento;
-//   free(tmp);
-//   return el;
-// }
-// void mostrar(Pilha *pilha) {
-//   Celula *tmp = pilha->topo;
-//   char buffer[300];
-
-//   while (tmp != NULL) {
-//     formatar_restaurante(tmp->elemento, buffer);
-//     printf("%s\n", buffer);
-//     tmp = tmp->prox;
-//   }
-// }
-
-typedef struct Pilha {
-  Restaurante *arr[200];
-  int topo;
-} Pilha;
-
-void inserir(Pilha *p, Restaurante *x) {
-  p->arr[p->topo] = x;
-  p->topo++;
-}
-
-Restaurante *remover(Pilha *p) {
-  p->topo--;
-  Restaurante *r = p->arr[p->topo];
-
-  return r;
-}
-void mostrar(Pilha *p) {
-  char buff[300];
-  for (int i = p->topo - 1; i >= 0; i--) {
-    formatar_restaurante(p->arr[i], buff);
-    printf("%s\n", buff);
-  }
-}
 
 int get_maior_capacidade(Restaurante *rs[], int end) {
   int maior = rs[0]->capacidade;
@@ -391,27 +408,6 @@ int get_maior_capacidade(Restaurante *rs[], int end) {
   }
 
   return maior;
-}
-
-void counting_sort(Restaurante *A[], Restaurante *B[], int n, int k) {
-
-  int C[k], i, j;
-
-  for (i = 0; i < k; i++) {
-    C[i] = 0;
-  }
-
-  for (j = 0; j < n; j++) {
-    C[A[j]->capacidade] = C[A[j]->capacidade] + 1;
-  }
-
-  for (i = 1; i < k; i++) {
-    C[i] = C[i] + C[i - 1];
-  }
-  for (j = n - 1; j >= 0; j--) {
-    B[C[A[j]->capacidade] - 1] = A[j];
-    C[A[j]->capacidade] = C[A[j]->capacidade] - 1;
-  }
 }
 
 void ordenacao_por_insercao(Restaurante *rs[], int n, int k) {
@@ -519,18 +515,71 @@ int main() {
   // }
   // questão 4
 
-  int id = 0, end = 0, k = 10;
+  // int id = 0, end = 0, k = 10;
+  // fgets(s, sizeof(s), stdin);
+  // sscanf(s, "%d", &id);
+
+  // while (id != -1) {
+  //   rs[end++] = pesquisa_sequencial_por_id(c, id);
+  //   fgets(s, sizeof(s), stdin);
+  //   sscanf(s, "%d", &id);
+  // }
+
+  // heapsort(rs, end);
+  // print_restaurantes(rs, end);
+
+  // questão 5
+
+  Lista *lista = (Lista *)malloc(sizeof(Lista));
+  Celula *cabeca = (Celula *)malloc(sizeof(Celula));
+  lista->primeiro = cabeca;
+  lista->ultimo = cabeca;
+
+  int id, end = 0;
   fgets(s, sizeof(s), stdin);
   sscanf(s, "%d", &id);
 
   while (id != -1) {
-    rs[end++] = pesquisa_sequencial_por_id(c, id);
+    inserirFim(lista, pesquisa_sequencial_por_id(c, id));
+    end++;
     fgets(s, sizeof(s), stdin);
     sscanf(s, "%d", &id);
   }
 
-  heapsort(rs, end);
-  print_restaurantes(rs, end);
+  int n, pos, valor, size = 0;
+  scanf("%d", &n);
+  Restaurante *removidos[100];
+  char comando[2];
 
+  for (int i = 0; i < n; i++) {
+    scanf("%s", comando);
+
+    if (strcmp(comando, "II") == 0) {
+      scanf("%d", &valor);
+      inserirInicio(lista, pesquisa_sequencial_por_id(c, valor));
+    } else if (strcmp(comando, "I*") == 0) {
+      scanf("%d %d", &pos, &valor);
+      inserir(lista, pesquisa_sequencial_por_id(c, valor), pos);
+    } else if (strcmp(comando, "IF") == 0) {
+      scanf("%d", &valor);
+      inserirFim(lista, pesquisa_sequencial_por_id(c, valor));
+    } else if (strcmp(comando, "RI") == 0) {
+      Restaurante *r = removerInicio(lista);
+      removidos[size++] = r;
+    } else if (strcmp(comando, "R*") == 0) {
+      scanf("%d", &pos);
+      Restaurante *r = remover(lista, pos);
+      removidos[size++] = r;
+    } else if (strcmp(comando, "RF") == 0) {
+      Restaurante *r = removerFim(lista);
+      removidos[size++] = r;
+    }
+  }
+
+  for (int i = 0; i < size; i++) {
+    printf("(R)%s\n", removidos[i]->nome);
+  }
+
+  mostrar(lista);
   liberar_memoria(c);
 }
