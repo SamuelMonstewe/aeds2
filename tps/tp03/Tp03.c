@@ -489,6 +489,51 @@ void heapsort(Restaurante *rs[], int n) {
     maximiza_heap(rs, 0);
   }
 }
+
+typedef struct CelulaFila {
+  Restaurante *elemento;
+  struct CelulaFila *prox;
+} CelulaFila;
+typedef struct Fila {
+  CelulaFila *primeiro;
+  CelulaFila *ultimo;
+} Fila;
+
+void enqueue(Fila *fila, Restaurante *r) {
+  CelulaFila *novo = (CelulaFila *)malloc(sizeof(CelulaFila));
+  novo->elemento = r;
+  novo->prox = NULL;
+  fila->ultimo->prox = novo;
+  fila->ultimo = novo;
+}
+
+Restaurante *dequeue(Fila *fila) {
+  if (fila->primeiro == fila->ultimo) {
+    return NULL;
+  }
+
+  Restaurante *r = fila->primeiro->prox->elemento;
+  CelulaFila *antigaCabeca = fila->primeiro;
+  fila->primeiro = fila->primeiro->prox;
+  free(antigaCabeca);
+
+  return r;
+}
+
+void mostrarFila(Fila *fila) {
+  if (fila->primeiro == fila->ultimo) {
+    return;
+  }
+
+  CelulaFila *tmp = fila->primeiro->prox;
+  char buff[300];
+
+  while (tmp != NULL) {
+    formatar_restaurante(tmp->elemento, buff);
+    printf("%s\n", buff);
+    tmp = tmp->prox;
+  }
+}
 int main() {
   Colecao_Restaurantes *c = ler_csv();
   char s[500], buffer[300];
@@ -530,56 +575,95 @@ int main() {
 
   // questão 5
 
-  Lista *lista = (Lista *)malloc(sizeof(Lista));
-  Celula *cabeca = (Celula *)malloc(sizeof(Celula));
-  lista->primeiro = cabeca;
-  lista->ultimo = cabeca;
+  // Lista *lista = (Lista *)malloc(sizeof(Lista));
+  // Celula *cabeca = (Celula *)malloc(sizeof(Celula));
+  // lista->primeiro = cabeca;
+  // lista->ultimo = cabeca;
 
-  int id, end = 0;
+  // int id, end = 0;
+  // fgets(s, sizeof(s), stdin);
+  // sscanf(s, "%d", &id);
+
+  // while (id != -1) {
+  //   inserirFim(lista, pesquisa_sequencial_por_id(c, id));
+  //   end++;
+  //   fgets(s, sizeof(s), stdin);
+  //   sscanf(s, "%d", &id);
+  // }
+
+  // int n, pos, valor, size = 0;
+  // scanf("%d", &n);
+  // Restaurante *removidos[100];
+  // char comando[2];
+
+  // for (int i = 0; i < n; i++) {
+  //   scanf("%s", comando);
+
+  //   if (strcmp(comando, "II") == 0) {
+  //     scanf("%d", &valor);
+  //     inserirInicio(lista, pesquisa_sequencial_por_id(c, valor));
+  //   } else if (strcmp(comando, "I*") == 0) {
+  //     scanf("%d %d", &pos, &valor);
+  //     inserir(lista, pesquisa_sequencial_por_id(c, valor), pos);
+  //   } else if (strcmp(comando, "IF") == 0) {
+  //     scanf("%d", &valor);
+  //     inserirFim(lista, pesquisa_sequencial_por_id(c, valor));
+  //   } else if (strcmp(comando, "RI") == 0) {
+  //     Restaurante *r = removerInicio(lista);
+  //     removidos[size++] = r;
+  //   } else if (strcmp(comando, "R*") == 0) {
+  //     scanf("%d", &pos);
+  //     Restaurante *r = remover(lista, pos);
+  //     removidos[size++] = r;
+  //   } else if (strcmp(comando, "RF") == 0) {
+  //     Restaurante *r = removerFim(lista);
+  //     removidos[size++] = r;
+  //   }
+  // }
+
+  // for (int i = 0; i < size; i++) {
+  //   printf("(R)%s\n", removidos[i]->nome);
+  // }
+
+  // mostrar(lista);
+
+  // questão 7
+  Fila *fila = (Fila *)malloc(sizeof(Fila));
+  CelulaFila *cabeca = (CelulaFila *)malloc(sizeof(CelulaFila));
+  fila->primeiro = cabeca;
+  fila->ultimo = cabeca;
+  cabeca->prox = NULL;
+
+  int id = 0;
   fgets(s, sizeof(s), stdin);
   sscanf(s, "%d", &id);
 
   while (id != -1) {
-    inserirFim(lista, pesquisa_sequencial_por_id(c, id));
-    end++;
+    enqueue(fila, pesquisa_sequencial_por_id(c, id));
     fgets(s, sizeof(s), stdin);
     sscanf(s, "%d", &id);
   }
 
-  int n, pos, valor, size = 0;
-  scanf("%d", &n);
+  int n = 0, size = 0;
   Restaurante *removidos[100];
-  char comando[2];
+  char comando;
+  scanf("%d", &n);
 
   for (int i = 0; i < n; i++) {
-    scanf("%s", comando);
+    scanf(" %c", &comando);
 
-    if (strcmp(comando, "II") == 0) {
-      scanf("%d", &valor);
-      inserirInicio(lista, pesquisa_sequencial_por_id(c, valor));
-    } else if (strcmp(comando, "I*") == 0) {
-      scanf("%d %d", &pos, &valor);
-      inserir(lista, pesquisa_sequencial_por_id(c, valor), pos);
-    } else if (strcmp(comando, "IF") == 0) {
-      scanf("%d", &valor);
-      inserirFim(lista, pesquisa_sequencial_por_id(c, valor));
-    } else if (strcmp(comando, "RI") == 0) {
-      Restaurante *r = removerInicio(lista);
-      removidos[size++] = r;
-    } else if (strcmp(comando, "R*") == 0) {
-      scanf("%d", &pos);
-      Restaurante *r = remover(lista, pos);
-      removidos[size++] = r;
-    } else if (strcmp(comando, "RF") == 0) {
-      Restaurante *r = removerFim(lista);
-      removidos[size++] = r;
+    if (comando == 'I') {
+      scanf("%d", &id);
+      enqueue(fila, pesquisa_sequencial_por_id(c, id));
+    } else if (comando == 'R') {
+      removidos[size++] = dequeue(fila);
     }
   }
 
-  for (int i = 0; i < size; i++) {
-    printf("(R)%s\n", removidos[i]->nome);
+  for (int j = 0; j < size; j++) {
+    printf("(R)%s\n", removidos[j]->nome);
   }
 
-  mostrar(lista);
+  mostrarFila(fila);
   liberar_memoria(c);
 }
