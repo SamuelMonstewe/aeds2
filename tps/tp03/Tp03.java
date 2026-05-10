@@ -395,6 +395,152 @@ class Pilha {
   }
 }
 
+class CelulaLista {
+  CelulaLista prox;
+  CelulaLista ant;
+  Restaurante elemento;
+}
+
+class ListaFlexivel {
+  CelulaLista primeiro;
+  CelulaLista ultimo;
+
+  public ListaFlexivel() {
+    CelulaLista lista = new CelulaLista();
+    primeiro = lista;
+    ultimo = lista;
+  }
+
+  public void inserirInicio(Restaurante restaurante) {
+    primeiro.elemento = restaurante; // faço a antiga cabeça ser o novo elemento
+    CelulaLista novoCabeca = new CelulaLista();
+    novoCabeca.ant = null;
+    novoCabeca.prox = primeiro;
+    primeiro = novoCabeca;
+    novoCabeca.elemento = restaurante;
+    novoCabeca = null;
+  }
+
+  public void inserir(Restaurante restaurante, int posicao) {
+    int tam = tamanho();
+    if (posicao < 0 || posicao > tam) {
+      return;
+    } else if (posicao == 0) {
+      inserirInicio(restaurante);
+    } else if (posicao == tam) {
+      inserirFim(restaurante);
+    } else {
+      CelulaLista i = primeiro;
+      for (int j = 0; j < posicao; j++) {
+        i = i.prox;
+      }
+
+      CelulaLista tmp = new CelulaLista();
+      tmp.elemento = restaurante;
+      tmp.prox = i.prox;
+      tmp.ant = i;
+      i.prox = tmp;
+    }
+  }
+
+  public void inserirFim(Restaurante restaurante) {
+    CelulaLista novo = new CelulaLista();
+    novo.elemento = restaurante;
+    novo.prox = null;
+    novo.ant = ultimo;
+    ultimo.prox = novo;
+    ultimo = novo;
+    novo = null;
+  }
+
+  public Restaurante removerInicio() {
+    if (primeiro == ultimo) {
+      return null;
+    }
+
+    CelulaLista tmp = primeiro.prox;
+    tmp.prox.ant = primeiro; // faço o próximo do elemento que eu quero remover apontar o ant para o primeiro
+    primeiro.prox = tmp.prox;
+    Restaurante r = tmp.elemento;
+    tmp.prox = null;
+    tmp.ant = null;
+    tmp = null;
+    return r;
+  }
+
+  public int tamanho() {
+    CelulaLista i = primeiro;
+    int n = 0;
+
+    while (i.prox != null) {
+      n++;
+      i = i.prox;
+    }
+
+    return n;
+  }
+
+  public Restaurante removerFim() {
+    if (primeiro == ultimo) {
+      return null;
+    }
+
+    CelulaLista i = primeiro;
+
+    while (i.prox != ultimo) {
+      i = i.prox;
+    }
+
+    ultimo = i;
+    Restaurante r = i.prox.elemento;
+    ultimo.prox = null;
+    i.ant = null;
+    i.prox = null;
+    i = null;
+    return r;
+  }
+
+  public Restaurante remover(int posicao) {
+    int tam = tamanho();
+    Restaurante r;
+    if (primeiro == ultimo || tam < 0 || posicao >= tam) {
+      return null;
+    } else if (posicao == 0) {
+      r = removerInicio();
+    } else if (posicao == tam - 1) {
+      r = removerFim();
+    } else {
+      CelulaLista i = primeiro;
+      int j = 0;
+
+      while (j < posicao) {
+        i = i.prox;
+        j++;
+      }
+
+      CelulaLista tmp = i.prox;
+      i.prox = tmp.prox;
+      tmp.prox.ant = i;
+      r = tmp.elemento;
+      tmp.prox = null;
+      tmp.ant = null;
+      tmp = null;
+    }
+
+    return r;
+  }
+
+  public void exibir() {
+    CelulaLista i = primeiro.prox;
+
+    while (i != null) {
+      System.out.println(i.elemento.formatar());
+      i = i.prox;
+    }
+  }
+
+}
+
 class Tp03 {
 
   public static int compSequencial = 0;
@@ -518,6 +664,7 @@ class Tp03 {
     // System.out.println(rs[i].formatar());
     // }
 
+    // questão 3
     // int end = 0;
     // int id = s.nextInt();
 
@@ -533,33 +680,77 @@ class Tp03 {
     // System.out.println(rs[i].formatar());
     // }
 
-    Pilha pilha = new Pilha();
-    int id = s.nextInt();
+    // questão 6
+    // Pilha pilha = new Pilha();
+    // int id = s.nextInt();
+
+    // while (id != -1) {
+    // pilha.push(pesquisaSequencialPorId(c, id));
+    // id = s.nextInt();
+    // }
+
+    // int n = s.nextInt(), valor, size = 0;
+    // Restaurante removidos[] = new Restaurante[100];
+    // String comando;
+
+    // for (int i = 0; i < n; i++) {
+    // comando = s.next();
+
+    // if (comando.compareTo("I") == 0) {
+    // valor = s.nextInt();
+    // pilha.push(pesquisaSequencialPorId(c, valor));
+    // } else if (comando.compareTo("R") == 0) {
+    // removidos[size++] = pilha.pop();
+    // }
+    // }
+
+    // for (int j = 0; j < size; j++) {
+    // System.out.println("(R)" + removidos[j].getNome());
+    // }
+    // pilha.mostrar();
+
+    // questão 8
+    ListaFlexivel lista = new ListaFlexivel();
+    int id = 0;
+    id = s.nextInt();
 
     while (id != -1) {
-      pilha.push(pesquisaSequencialPorId(c, id));
+      lista.inserirFim(pesquisaSequencialPorId(c, id));
       id = s.nextInt();
     }
 
-    int n = s.nextInt(), valor, size = 0;
-    Restaurante removidos[] = new Restaurante[100];
+    int n = s.nextInt(), pos, valor, size = 0;
+    Restaurante[] removidos = new Restaurante[100];
     String comando;
-
     for (int i = 0; i < n; i++) {
       comando = s.next();
 
-      if (comando.compareTo("I") == 0) {
+      if (comando.compareTo("II") == 0) {
         valor = s.nextInt();
-        pilha.push(pesquisaSequencialPorId(c, valor));
-      } else if (comando.compareTo("R") == 0) {
-        removidos[size++] = pilha.pop();
+        lista.inserirInicio(pesquisaSequencialPorId(c, valor));
+      } else if (comando.compareTo("I*") == 0) {
+        pos = s.nextInt();
+        valor = s.nextInt();
+        lista.inserir(pesquisaSequencialPorId(c, valor), pos);
+      } else if (comando.compareTo("IF") == 0) {
+        valor = s.nextInt();
+        lista.inserirFim(pesquisaSequencialPorId(c, valor));
+      } else if (comando.compareTo("RI") == 0) {
+        Restaurante r = lista.removerInicio();
+        removidos[size++] = r;
+      } else if (comando.compareTo("R*") == 0) {
+        pos = s.nextInt();
+        Restaurante r = lista.remover(pos);
+        removidos[size++] = r;
+      } else if (comando.compareTo("RF") == 0) {
+        Restaurante r = lista.removerFim();
+        removidos[size++] = r;
       }
     }
-
-    for (int j = 0; j < size; j++) {
-      System.out.println("(R)" + removidos[j].getNome());
+    for (int i = 0; i < size; i++) {
+      System.out.println("(R)" + removidos[i].getNome());
     }
-    pilha.mostrar();
+    lista.exibir();
     s.close();
   }
 }
