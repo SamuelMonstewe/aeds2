@@ -725,7 +725,7 @@ class Tp03 {
     Scanner s = new Scanner(System.in);
     ColecaoRestaurantes c = ColecaoRestaurantes.lerCsv();
 
-    // Restaurante[] rs = new Restaurante[500];
+    Restaurante[] rs = new Restaurante[500];
 
     // questão 1
     // int end = 0;
@@ -846,10 +846,11 @@ class Tp03 {
     s.nextLine();
     String chave;
 
-    while (s.hasNext()) {
-      chave = s.nextLine();
+    chave = s.nextLine();
+    while (!(chave.charAt(0) == 'F' && chave.charAt(1) == 'I' && chave.charAt(2) == 'M')) {
       System.out.print("raiz ");
       a.pesquisar(a.root, chave);
+      chave = s.nextLine();
     }
 
     a.percursoEmOrdem(a.root);
@@ -858,7 +859,8 @@ class Tp03 {
     tempoArvore += (fim - inicio) / 1000000.0;
 
     try (BufferedWriter bw = new BufferedWriter(new FileWriter("897962_arvore_binaria.txt"))) {
-      String conteudo = "897962\t" + ArvoreBinaria.compArvore + "\t" + tempoArvore + "\t" + "\n";
+      String conteudo = "897962\t" + ArvoreBinaria.compArvore + "\t" + tempoArvore
+          + "\t" + "\n";
       bw.write(conteudo);
     } catch (IOException e) {
       System.out.println(e);

@@ -19,6 +19,9 @@ double tempoInsercao = 0.0;
 int compHeap = 0, movHeap = 0;
 double tempoHeap = 0.0;
 
+int compArvore = 0;
+double tempoArvore = 0.0;
+
 typedef struct {
   int hora;
   int minuto;
@@ -534,9 +537,72 @@ void mostrarFila(Fila *fila) {
     tmp = tmp->prox;
   }
 }
+
+typedef struct No {
+  struct No *left;
+  struct No *right;
+  Restaurante *elemento;
+} No;
+
+typedef struct ArvoreBinaria {
+  No *root;
+} ArvoreBinaria;
+
+No *inserirArvore(No *root, Restaurante *x) {
+  compArvore++;
+  if (root == NULL) {
+    No *new = (No *)malloc(sizeof(No));
+    new->left = NULL;
+    new->right = NULL;
+    new->elemento = x;
+    return new;
+  }
+
+  compArvore++;
+  if (strcmp(x->nome, root->elemento->nome) < 0) {
+    root->left = inserirArvore(root->left, x);
+  } else if (strcmp(x->nome, root->elemento->nome) > 0) {
+    compArvore++;
+    root->right = inserirArvore(root->right, x);
+  }
+
+  return root;
+}
+char buffer[300];
+void percurso_em_ordem(No *root) {
+  compArvore++;
+  if (root != NULL) {
+    percurso_em_ordem(root->left);
+    formatar_restaurante(root->elemento, buffer);
+    printf("%s\n", buffer);
+    percurso_em_ordem(root->right);
+  }
+}
+
+void pesquisar(No *root, char *s) {
+  compArvore++;
+  if (root == NULL) {
+    printf("NAO\n");
+    return;
+  }
+
+  int result = strcmp(s, root->elemento->nome);
+  compArvore++;
+  if (result == 0) {
+    printf("%s", "SIM\n");
+  } else if (result < 0) {
+    compArvore++;
+    printf("esq ");
+    pesquisar(root->left, s);
+  } else if (result > 0) {
+    compArvore++;
+    printf("dir ");
+    pesquisar(root->right, s);
+  }
+}
 int main() {
   Colecao_Restaurantes *c = ler_csv();
-  char s[500], buffer[300];
+  char s[500];
   Restaurante *rs[500];
 
   // questão 2
@@ -552,6 +618,7 @@ int main() {
   // int k = 10;
   // ordenacao_por_insercao(rs, end, ++k);
 
+  // print_restaurantes(rs, end);
   // FILE *logInsercao = fopen("897962_insercao.txt", "w");
   // if (logInsercao) {
   //   fprintf(logInsercao, "%d\t%d\t%lf\t%d\n", MATRICULA, compInsercao,
@@ -628,42 +695,72 @@ int main() {
   // mostrar(lista);
 
   // questão 7
-  Fila *fila = (Fila *)malloc(sizeof(Fila));
-  CelulaFila *cabeca = (CelulaFila *)malloc(sizeof(CelulaFila));
-  fila->primeiro = cabeca;
-  fila->ultimo = cabeca;
-  cabeca->prox = NULL;
+  // Fila *fila = (Fila *)malloc(sizeof(Fila));
+  // CelulaFila *cabeca = (CelulaFila *)malloc(sizeof(CelulaFila));
+  // fila->primeiro = cabeca;
+  // fila->ultimo = cabeca;
+  // cabeca->prox = NULL;
 
+  // int id = 0;
+  // fgets(s, sizeof(s), stdin);
+  // sscanf(s, "%d", &id);
+
+  // while (id != -1) {
+  //   enqueue(fila, pesquisa_sequencial_por_id(c, id));
+  //   fgets(s, sizeof(s), stdin);
+  //   sscanf(s, "%d", &id);
+  // }
+
+  // int n = 0, size = 0;
+  // Restaurante *removidos[100];
+  // char comando;
+  // scanf("%d", &n);
+
+  // for (int i = 0; i < n; i++) {
+  //   scanf(" %c", &comando);
+
+  //   if (comando == 'I') {
+  //     scanf("%d", &id);
+  //     enqueue(fila, pesquisa_sequencial_por_id(c, id));
+  //   } else if (comando == 'R') {
+  //     removidos[size++] = dequeue(fila);
+  //   }
+  // }
+
+  // for(int j = 0; j < size; j++){
+  //   printf("(R)%s\n", removidos[j]->nome);
+  // }
+
+  // mostrarFila(fila);
+
+  // questão 13
+
+  ArvoreBinaria *a = (ArvoreBinaria *)malloc(sizeof(ArvoreBinaria));
+  a->root = NULL;
   int id = 0;
   fgets(s, sizeof(s), stdin);
   sscanf(s, "%d", &id);
 
   while (id != -1) {
-    enqueue(fila, pesquisa_sequencial_por_id(c, id));
+    a->root = inserirArvore(a->root, pesquisa_sequencial_por_id(c, id));
     fgets(s, sizeof(s), stdin);
     sscanf(s, "%d", &id);
   }
 
-  int n = 0, size = 0;
-  Restaurante *removidos[100];
-  char comando;
-  scanf("%d", &n);
-
-  for (int i = 0; i < n; i++) {
-    scanf(" %c", &comando);
-
-    if (comando == 'I') {
-      scanf("%d", &id);
-      enqueue(fila, pesquisa_sequencial_por_id(c, id));
-    } else if (comando == 'R') {
-      removidos[size++] = dequeue(fila);
-    }
+  while (fgets(s, sizeof(s), stdin) != NULL &&
+         !(s[0] == 'F' && s[1] == 'I' && s[2] == 'M')) {
+    retirar_quebra_de_linha(s);
+    printf("raiz ");
+    pesquisar(a->root, s);
   }
 
-  for (int j = 0; j < size; j++) {
-    printf("(R)%s\n", removidos[j]->nome);
+  percurso_em_ordem(a->root);
+  // percurso_em_ordem(a->root);
+  FILE *logArvore = fopen("897962_arvore_binaria.txt", "w");
+  if (logArvore) {
+    fprintf(logArvore, "%d\t%d\t%lf\t", MATRICULA, compArvore, tempoArvore);
+    fclose(logArvore);
   }
 
-  mostrarFila(fila);
   liberar_memoria(c);
 }
