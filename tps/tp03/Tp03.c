@@ -335,6 +335,27 @@ void mostrar(Lista *lista) {
   }
 }
 
+void swap(Celula *c1, Celula *c2) {
+  Restaurante *tmp = c1->elemento;
+  c1->elemento = c2->elemento;
+  c2->elemento = tmp;
+}
+void ordenar_lista_por_selecao(Lista *lista) {
+  for (Celula *k = lista->primeiro->prox; k != NULL && k->prox != NULL;
+       k = k->prox) {
+    Celula *menor = k;
+    for (Celula *j = k->prox; j != NULL; j = j->prox) {
+      if (strcmp(j->elemento->nome, menor->elemento->nome) < 0) {
+        menor = j;
+      }
+    }
+
+    if (menor != k) {
+      swap(k, menor);
+    }
+  }
+}
+
 int particiona(Restaurante **rs, int p, int r) {
   Restaurante *x = rs[r]; // restaurante pivo
   movQuick++;
@@ -733,34 +754,54 @@ int main() {
 
   // mostrarFila(fila);
 
-  // questão 13
+  // questão 10
 
-  ArvoreBinaria *a = (ArvoreBinaria *)malloc(sizeof(ArvoreBinaria));
-  a->root = NULL;
-  int id = 0;
+  Lista *lista = (Lista *)malloc(sizeof(Lista));
+  Celula *cabeca = (Celula *)malloc(sizeof(Celula));
+  lista->primeiro = cabeca;
+  lista->ultimo = cabeca;
+
+  int id;
   fgets(s, sizeof(s), stdin);
   sscanf(s, "%d", &id);
 
   while (id != -1) {
-    a->root = inserirArvore(a->root, pesquisa_sequencial_por_id(c, id));
+    inserirFim(lista, pesquisa_sequencial_por_id(c, id));
     fgets(s, sizeof(s), stdin);
     sscanf(s, "%d", &id);
   }
 
-  while (fgets(s, sizeof(s), stdin) != NULL &&
-         !(s[0] == 'F' && s[1] == 'I' && s[2] == 'M')) {
-    retirar_quebra_de_linha(s);
-    printf("raiz ");
-    pesquisar(a->root, s);
-  }
+  ordenar_lista_por_selecao(lista);
 
-  percurso_em_ordem(a->root);
+  mostrar(lista);
+  // questão 13
+
+  // ArvoreBinaria *a = (ArvoreBinaria *)malloc(sizeof(ArvoreBinaria));
+  // a->root = NULL;
+  // int id = 0;
+  // fgets(s, sizeof(s), stdin);
+  // sscanf(s, "%d", &id);
+
+  // while (id != -1) {
+  //   a->root = inserirArvore(a->root, pesquisa_sequencial_por_id(c, id));
+  //   fgets(s, sizeof(s), stdin);
+  //   sscanf(s, "%d", &id);
+  // }
+
+  // while (fgets(s, sizeof(s), stdin) != NULL &&
+  //        !(s[0] == 'F' && s[1] == 'I' && s[2] == 'M')) {
+  //   retirar_quebra_de_linha(s);
+  //   printf("raiz ");
+  //   pesquisar(a->root, s);
+  // }
+
   // percurso_em_ordem(a->root);
-  FILE *logArvore = fopen("897962_arvore_binaria.txt", "w");
-  if (logArvore) {
-    fprintf(logArvore, "%d\t%d\t%lf\t", MATRICULA, compArvore, tempoArvore);
-    fclose(logArvore);
-  }
+  // // percurso_em_ordem(a->root);
+  // FILE *logArvore = fopen("897962_arvore_binaria.txt", "w");
+  // if (logArvore) {
+  //   fprintf(logArvore, "%d\t%d\t%lf\t", MATRICULA, compArvore, tempoArvore);
+  //   fclose(logArvore);
+  // }
 
   liberar_memoria(c);
 }
