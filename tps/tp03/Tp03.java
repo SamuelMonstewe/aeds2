@@ -1,5 +1,7 @@
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -541,6 +543,83 @@ class ListaFlexivel {
 
 }
 
+class No {
+  No left;
+  No right;
+  Restaurante elemento;
+
+  public No(Restaurante x) {
+    elemento = x;
+  }
+}
+
+class ArvoreBinaria {
+  No root;
+  static int compArvore = 0;
+
+  public ArvoreBinaria() {
+    root = null;
+  }
+
+  public void inserir(Restaurante x) {
+    root = inserir(root, x);
+  }
+
+  public No inserir(No no, Restaurante x) {
+    compArvore++;
+    if (no == null) {
+      return new No(x);
+    }
+
+    String nomeNovo = x.getNome();
+    String nomeAtual = no.elemento.getNome();
+    compArvore++;
+    if (nomeNovo.compareTo(nomeAtual) < 0) {
+      no.left = inserir(no.left, x);
+    } else if (nomeNovo.compareTo(nomeAtual) > 0) {
+      compArvore++;
+      no.right = inserir(no.right, x);
+    }
+
+    return no;
+  }
+
+  public void pesquisar(No no, String x) {
+    compArvore++;
+    if (no == null) {
+      System.out.println("NAO");
+      return;
+    }
+
+    int result = x.compareTo(no.elemento.getNome());
+
+    compArvore++;
+    if (result == 0) {
+      System.out.println("SIM");
+      return;
+    }
+
+    compArvore++;
+    if (result < 0) {
+      System.out.print("esq ");
+      pesquisar(no.left, x);
+    } else if (result > 0) {
+      compArvore++;
+      System.out.print("dir ");
+      pesquisar(no.right, x);
+    }
+  }
+
+  public void percursoEmOrdem(No no) {
+    compArvore++;
+    if (no != null) {
+      percursoEmOrdem(no.left);
+      System.out.println(no.elemento.formatar());
+      percursoEmOrdem(no.right);
+    }
+  }
+}
+
 class Tp03 {
 
   public static int compSequencial = 0;
@@ -646,7 +725,7 @@ class Tp03 {
     Scanner s = new Scanner(System.in);
     ColecaoRestaurantes c = ColecaoRestaurantes.lerCsv();
 
-    Restaurante[] rs = new Restaurante[500];
+    // Restaurante[] rs = new Restaurante[500];
 
     // questão 1
     // int end = 0;
@@ -710,47 +789,81 @@ class Tp03 {
     // pilha.mostrar();
 
     // questão 8
-    ListaFlexivel lista = new ListaFlexivel();
+    // ListaFlexivel lista = new ListaFlexivel();
+    // int id = 0;
+    // id = s.nextInt();
+
+    // while (id != -1) {
+    // lista.inserirFim(pesquisaSequencialPorId(c, id));
+    // id = s.nextInt();
+    // }
+
+    // int n = s.nextInt(), pos, valor, size = 0;
+    // Restaurante[] removidos = new Restaurante[100];
+    // String comando;
+    // for (int i = 0; i < n; i++) {
+    // comando = s.next();
+
+    // if (comando.compareTo("II") == 0) {
+    // valor = s.nextInt();
+    // lista.inserirInicio(pesquisaSequencialPorId(c, valor));
+    // } else if (comando.compareTo("I*") == 0) {
+    // pos = s.nextInt();
+    // valor = s.nextInt();
+    // lista.inserir(pesquisaSequencialPorId(c, valor), pos);
+    // } else if (comando.compareTo("IF") == 0) {
+    // valor = s.nextInt();
+    // lista.inserirFim(pesquisaSequencialPorId(c, valor));
+    // } else if (comando.compareTo("RI") == 0) {
+    // Restaurante r = lista.removerInicio();
+    // removidos[size++] = r;
+    // } else if (comando.compareTo("R*") == 0) {
+    // pos = s.nextInt();
+    // Restaurante r = lista.remover(pos);
+    // removidos[size++] = r;
+    // } else if (comando.compareTo("RF") == 0) {
+    // Restaurante r = lista.removerFim();
+    // removidos[size++] = r;
+    // }
+    // }
+    // for (int i = 0; i < size; i++) {
+    // System.out.println("(R)" + removidos[i].getNome());
+    // }
+    // lista.exibir();
+
+    // questão 12
+
+    ArvoreBinaria a = new ArvoreBinaria();
     int id = 0;
     id = s.nextInt();
 
+    long inicio = System.nanoTime();
+    double tempoArvore = 0.0;
     while (id != -1) {
-      lista.inserirFim(pesquisaSequencialPorId(c, id));
+      a.inserir(pesquisaSequencialPorId(c, id));
       id = s.nextInt();
     }
+    s.nextLine();
+    String chave;
 
-    int n = s.nextInt(), pos, valor, size = 0;
-    Restaurante[] removidos = new Restaurante[100];
-    String comando;
-    for (int i = 0; i < n; i++) {
-      comando = s.next();
+    while (s.hasNext()) {
+      chave = s.nextLine();
+      System.out.print("raiz ");
+      a.pesquisar(a.root, chave);
+    }
 
-      if (comando.compareTo("II") == 0) {
-        valor = s.nextInt();
-        lista.inserirInicio(pesquisaSequencialPorId(c, valor));
-      } else if (comando.compareTo("I*") == 0) {
-        pos = s.nextInt();
-        valor = s.nextInt();
-        lista.inserir(pesquisaSequencialPorId(c, valor), pos);
-      } else if (comando.compareTo("IF") == 0) {
-        valor = s.nextInt();
-        lista.inserirFim(pesquisaSequencialPorId(c, valor));
-      } else if (comando.compareTo("RI") == 0) {
-        Restaurante r = lista.removerInicio();
-        removidos[size++] = r;
-      } else if (comando.compareTo("R*") == 0) {
-        pos = s.nextInt();
-        Restaurante r = lista.remover(pos);
-        removidos[size++] = r;
-      } else if (comando.compareTo("RF") == 0) {
-        Restaurante r = lista.removerFim();
-        removidos[size++] = r;
-      }
+    a.percursoEmOrdem(a.root);
+
+    long fim = System.nanoTime();
+    tempoArvore += (fim - inicio) / 1000000.0;
+
+    try (BufferedWriter bw = new BufferedWriter(new FileWriter("897962_arvore_binaria.txt"))) {
+      String conteudo = "897962\t" + ArvoreBinaria.compArvore + "\t" + tempoArvore + "\t" + "\n";
+      bw.write(conteudo);
+    } catch (IOException e) {
+      System.out.println(e);
     }
-    for (int i = 0; i < size; i++) {
-      System.out.println("(R)" + removidos[i].getNome());
-    }
-    lista.exibir();
+
     s.close();
   }
 }
