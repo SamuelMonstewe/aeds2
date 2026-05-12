@@ -43,13 +43,16 @@ void montarMatriz(Matriz *matriz) {
 
   coluna = linha;
 
-  for (int j = 0; j < matriz->linha * matriz->coluna - matriz->coluna; j++) {
+  int quantidadeDeNoRestante = matriz->linha * matriz->coluna - matriz->coluna;
+
+  for (int j = 0; j < quantidadeDeNoRestante; j++) {
     coluna->inf = newNo();
     coluna->inf->elemento = 0;
     coluna->inf->sup = coluna;
     coluna->inf->esq = NULL;
     coluna->inf->inf = NULL;
 
+    // tem nó a esquerda para conectar ao novo?
     if (coluna->esq != NULL) {
       coluna->inf->esq = coluna->esq->inf;
       coluna->esq->inf->dir = coluna->inf;
