@@ -27,9 +27,8 @@ No *newNo() {
 
   return nova;
 }
-int main() {
-  Matriz *matriz = newMatriz(2, 10);
 
+void montarMatriz(Matriz *matriz) {
   matriz->inicio = newNo();
   No *linha = matriz->inicio;
   No *coluna = matriz->inicio;
@@ -63,11 +62,18 @@ int main() {
       coluna = linha;
     }
   }
+}
 
+void mostrar(Matriz *matriz) {
   for (No *i = matriz->inicio; i != NULL; i = i->inf) {
     for (No *j = i; j != NULL; j = j->dir) {
       printf("%d ", j->elemento);
     }
     printf("\n");
   }
+}
+int main() {
+  Matriz *matriz = newMatriz(2, 10);
+  montarMatriz(matriz);
+  mostrar(matriz);
 }
