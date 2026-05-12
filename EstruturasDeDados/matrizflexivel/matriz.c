@@ -33,6 +33,7 @@ void montarMatriz(Matriz *matriz) {
   No *linha = matriz->inicio;
   No *coluna = matriz->inicio;
 
+  // cria o "cabeçalho" da matriz primeiro
   for (int i = 1; i < matriz->coluna; i++) {
     No *novo = newNo();
     novo->elemento = 0;
@@ -58,6 +59,8 @@ void montarMatriz(Matriz *matriz) {
       coluna->esq->inf->dir = coluna->inf;
     }
 
+    // se o proximo nó (direito no caso) for nulo, terminamos a linha atual e
+    // vamos para a de baixo
     if (coluna->dir != NULL) {
       coluna = coluna->dir;
     } else {
