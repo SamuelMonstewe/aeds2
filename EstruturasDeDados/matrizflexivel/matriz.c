@@ -59,11 +59,11 @@ void montarMatriz(Matriz *matriz) {
       coluna->esq->inf->dir = coluna->inf;
     }
 
-    // se o proximo nó (direito no caso) for nulo, terminamos a linha atual e
-    // vamos para a de baixo
     if (coluna->dir != NULL) {
       coluna = coluna->dir;
     } else {
+      // se o nó direito for nulo, terminamos a linha atual e
+      // vamos para a de baixo
       linha = linha->inf;
       coluna = linha;
     }
