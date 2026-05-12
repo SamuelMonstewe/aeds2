@@ -32,7 +32,7 @@ void montarMatriz(Matriz *matriz) {
   matriz->inicio = newNo();
   No *linha = matriz->inicio;
   No *coluna = matriz->inicio;
-  int tam = matriz->linha * matriz->coluna;
+
   for (int i = 1; i < matriz->coluna; i++) {
     No *novo = newNo();
     novo->elemento = 0;
