@@ -86,11 +86,21 @@ struct No *inserirRecursivo(struct No *raiz, struct No *z) {
 
   return z;
 }
+int heigth(struct No *root) {
+  if (root == NULL || (root->dir == NULL && root->esq == NULL)) {
+    return 0;
+  }
+
+  int hl = 1 + heigth(root->esq);
+  int hr = 1 + heigth(root->dir);
+
+  return (hl < hr) ? hr : hl;
+}
 
 int main() {
   struct Arvore *T = (struct Arvore *)malloc(sizeof(struct Arvore));
   T->root = NULL;
-  int A[] = {12, 18, 15, 17, 19, 5, 9, 2};
+  int A[] = {1, 2, 3, 4, 5, 6, 7, 8};
   int i = 0;
   while (i < 8) {
     struct No *no = (struct No *)malloc(sizeof(struct No));
@@ -101,5 +111,6 @@ int main() {
     T->root = inserirRecursivo(T->root, no);
     i++;
   }
-  percurso_em_ordem(T->root);
+
+  printf("%d", heigth(T->root));
 }
