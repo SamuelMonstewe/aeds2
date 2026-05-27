@@ -11,7 +11,15 @@ struct No {
 struct Arvore {
   struct No *root;
 };
+struct No *newNo(int x) {
+  struct No *no = (struct No *)malloc(sizeof(struct No));
+  no->elemento = x;
+  no->dir = NULL;
+  no->esq = NULL;
+  no->pai = NULL;
 
+  return no;
+}
 // h = altura da árvore
 void percurso_em_ordem(struct No *x) { // Θ(n)
   if (x != NULL) {
@@ -70,21 +78,37 @@ void inserir(struct Arvore *T, struct No *z) { // O(h)
   }
 }
 
-struct No *inserirRecursivo(struct No *raiz, struct No *z) {
-  struct No *x = raiz;
+struct No *sucessor(struct No *x) {
+  struct No *y = NULL;
+  if (x->dir != NULL) {
+    return minimo(x->dir);
+  } else {
+    y = x->pai;
 
-  // se x for null, encontramos uma posição para z
-  if (x != NULL) {
-    if (z->elemento < x->elemento) {
-      x->esq = inserirRecursivo(x->esq, z);
-      return x;
-    } else {
-      x->dir = inserirRecursivo(x->dir, z);
-      return x;
+    while (y != NULL && x == y->dir) {
+      x = y;
+      y = y->pai;
     }
   }
 
-  return z;
+  return y;
+}
+
+struct No *inserirRecursivo(struct No *raiz, int x) {
+
+  if (raiz == NULL) {
+    return newNo(x);
+  } else {
+    if (x < raiz->elemento) {
+      raiz->esq = inserirRecursivo(raiz->esq, x);
+      raiz->esq->pai = raiz;
+    } else {
+      raiz->dir = inserirRecursivo(raiz->dir, x);
+      raiz->dir->pai = raiz;
+    }
+  }
+
+  return raiz;
 }
 int heigth(struct No *root) {
   if (root == NULL || (root->dir == NULL && root->esq == NULL)) {
@@ -103,14 +127,9 @@ int main() {
   int A[] = {1, 2, 3, 4, 5, 6, 7, 8};
   int i = 0;
   while (i < 8) {
-    struct No *no = (struct No *)malloc(sizeof(struct No));
-    no->elemento = A[i];
-    no->dir = NULL;
-    no->esq = NULL;
-    no->pai = NULL;
-    T->root = inserirRecursivo(T->root, no);
+    T->root = inserirRecursivo(T->root, A[i]);
     i++;
   }
 
-  printf("%d", heigth(T->root));
+  printf("%d", sucessor(T->root)->elemento);
 }
