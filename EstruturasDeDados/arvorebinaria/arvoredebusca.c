@@ -110,6 +110,40 @@ struct No *inserirRecursivo(struct No *raiz, int x) {
 
   return raiz;
 }
+
+void transplante(struct Arvore *T, struct No *u, struct No *v) {
+  if (u->pai == NULL) {
+    T->root = v;
+  } else if (u == u->pai->esq) {
+    u->pai->esq = v;
+  } else
+    u->pai->dir = v;
+
+  if (v != NULL) {
+    v->pai = u->pai;
+  }
+}
+
+void remover(struct Arvore *T, struct No *no) {
+  if (no->esq == NULL) {
+    transplante(T, no, no->dir);
+  } else if (no->dir == NULL) {
+    transplante(T, no, no->esq);
+  } else {
+    struct No *y = minimo(no->dir);
+
+    if (y != no->dir) {
+      transplante(T, y, y->dir);
+      y->dir = no->dir;
+      y->dir->pai = y;
+    }
+
+    transplante(T, no, y);
+    y->esq = no->esq;
+    y->esq->pai = y;
+  }
+}
+
 int heigth(struct No *root) {
   if (root == NULL || (root->dir == NULL && root->esq == NULL)) {
     return 0;
