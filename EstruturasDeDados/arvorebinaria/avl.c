@@ -204,7 +204,30 @@ Node *remover(AVL *T, Node *x) {
 
   return y;
 }
+void print_tree_recursivo(Node *root, int espaco) {
 
+  if (root == NULL) {
+    return;
+  }
+  espaco += 5;
+
+  print_tree_recursivo(root->right, espaco);
+
+  printf("\n");
+  for (int i = 5; i < espaco; i++) {
+    printf(" ");
+  }
+
+  printf("%d(h:%d)\n", root->key, root->h);
+
+  print_tree_recursivo(root->left, espaco);
+}
+
+void print_visual(AVL *T) {
+  printf("\n--- Estrutura da Arvore AVL (Deitada) ---\n");
+  print_tree_recursivo(T->root, 0);
+  printf("\n-----------------------------------------\n");
+}
 Node *search(Node *root, int x) {
   if (root == NULL || root->key == x) {
     return root;
@@ -225,12 +248,13 @@ int height(Node *root) { return root->h; }
 int main() {
   AVL *T = newAVL();
 
-  int A[] = {1, 2, 3, 4, 5, 6};
+  int A[] = {30, 25, 43, 99, 101, 22, 19};
 
-  for (int i = 0; i < 6; i++) {
+  for (int i = 0; i < 7; i++) {
     T->root = insert(T, T->root, A[i]);
   }
   Node *x = search(T->root, 4);
-  remover(T, x);
+  print_visual(T);
+
   // inorder_traversal(T->root);
 }
