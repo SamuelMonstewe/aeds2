@@ -137,6 +137,78 @@ Node *insert(AVL *T, Node *root, int x) {
   return balance(T, root);
 }
 
+void transplate(AVL *T, Node *u, Node *v) {
+  if (u->parent == NULL) {
+    T->root = v;
+  } else if (u == u->parent->left) {
+    u->parent->left = v;
+  } else {
+    u->parent->right = v;
+  }
+
+  if (v != NULL) {
+    v->parent = u->parent;
+  }
+}
+Node *minimo(Node *root) {
+  Node *y = root;
+
+  while (y->left != NULL) {
+    y = y->left;
+  }
+
+  return y;
+}
+Node *maximo(Node *root) {
+  Node *y = root;
+
+  while (y->right != NULL) {
+    y = y->right;
+  }
+
+  return y;
+}
+Node *remover(AVL *T, Node *x) {
+  Node *y = NULL;
+  Node *z = NULL;
+
+  if (x->left == NULL) {
+    transplate(T, x, x->right);
+  } else if (x->right == NULL) {
+    transplate(T, x, x->left);
+  } else {
+    y = minimo(x->right);
+    z = y->right;
+
+    if (y != x->right) {
+      transplate(T, y, y->right);
+      y->right = x->right;
+      y->right->parent = y;
+    }
+
+    transplate(T, x, y);
+    y->left = x->left; // y receive left subtree of x
+    y->left->parent = y;
+    free(x);
+  }
+
+  while (z != NULL) {
+    balance(T, z);
+    z = z->parent;
+  }
+
+  return y;
+}
+
+Node *search(Node *root, int x) {
+  if (root == NULL || root->key == x) {
+    return root;
+  }
+  if (x < root->key) {
+    return search(root->left, x);
+  } else
+    return search(root->right, x);
+}
 void inorder_traversal(Node *root) {
   if (root != NULL) {
     inorder_traversal(root->left);
@@ -153,6 +225,9 @@ int main() {
   for (int i = 0; i < 6; i++) {
     T->root = insert(T, T->root, A[i]);
   }
-  inorder_traversal(T->root);
-  printf("\n%d ", T->root->key);
+  Node *x = search(T->root, 4);
+  x = remover(T, x);
+  // inorder_traversal(T->root);
+
+  printf("%d ", x->h);
 }
