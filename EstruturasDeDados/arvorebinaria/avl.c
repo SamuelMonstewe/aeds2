@@ -68,7 +68,7 @@ void rotate_for_left(AVL *T, Node *x) {
   x->right = y->left;
 
   if (y->left != NULL) {
-    y->right->parent = x;
+    y->left->parent = x;
   }
 
   y->parent = x->parent;
@@ -170,28 +170,33 @@ Node *maximo(Node *root) {
 }
 Node *remover(AVL *T, Node *x) {
   Node *y = NULL;
-  Node *z = NULL;
+  Node *node_to_balance = NULL;
 
   if (x->left == NULL) {
+    node_to_balance = x->parent;
     transplate(T, x, x->right);
   } else if (x->right == NULL) {
+    node_to_balance = x->parent;
     transplate(T, x, x->left);
   } else {
     y = minimo(x->right);
-    z = y->right;
 
     if (y != x->right) {
+      node_to_balance = y->parent;
       transplate(T, y, y->right);
       y->right = x->right;
       y->right->parent = y;
+    } else {
+      node_to_balance = y;
     }
 
     transplate(T, x, y);
     y->left = x->left; // y receive left subtree of x
     y->left->parent = y;
-    free(x);
   }
 
+  free(x);
+  Node *z = node_to_balance;
   while (z != NULL) {
     balance(T, z);
     z = z->parent;
@@ -226,8 +231,6 @@ int main() {
     T->root = insert(T, T->root, A[i]);
   }
   Node *x = search(T->root, 4);
-  x = remover(T, x);
+  remover(T, x);
   // inorder_traversal(T->root);
-
-  printf("%d ", x->h);
 }
