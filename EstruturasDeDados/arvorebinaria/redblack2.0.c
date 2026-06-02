@@ -90,10 +90,13 @@ void inorder_traversal(RedBlackTree *T, Node *root) {
   }
 }
 int heigth(RedBlackTree *T, Node *root) {
-  if (root == T->T_nil || (root->left == T->T_nil && root->right == T->T_nil)) {
-    return 0;
+  if (root == T->T_nil) {
+    return -1;
   }
 
+  if (root->left == T->T_nil && root->right == T->T_nil) {
+    return 0;
+  }
   int hl = 1 + heigth(T, root->left);
   int hr = 1 + heigth(T, root->right);
 
