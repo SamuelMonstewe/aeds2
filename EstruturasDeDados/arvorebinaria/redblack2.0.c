@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#define MAX(a, b) ((a < b) ? b : a)
 #define RED 'R'
 #define BLACK 'B'
 
@@ -100,7 +101,7 @@ int heigth(RedBlackTree *T, Node *root) {
   int hl = 1 + heigth(T, root->left);
   int hr = 1 + heigth(T, root->right);
 
-  return (hl < hr) ? hr : hl;
+  return MAX(hl, hr);
 }
 int main() {
   RedBlackTree *T = (RedBlackTree *)malloc(sizeof(RedBlackTree));
