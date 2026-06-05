@@ -352,8 +352,27 @@ class Data {
 
 class Node {
   int h;
+  int key;
   Node left;
   Node right;
+
+  public Node(int x) {
+    this.left = null;
+    this.right = null;
+    this.key = x;
+    this.h = 0;
+  }
+
+  int getBalanceFactor() {
+    return getBalanceFactor(this);
+  }
+
+  int getBalanceFactor(Node node) {
+    int h_r = (node.right == null) ? -1 : node.right.h;
+    int h_l = (node.left == null) ? -1 : node.left.h;
+
+    return h_l - h_r;
+  }
 }
 
 class AVL {
@@ -376,16 +395,63 @@ class AVL {
   }
 
   void insert(int x) {
-
+    this.root = insert(this.root, x);
   }
 
-  void insert(Node node, int x) {
+  Node insert(Node node, int x) {
+    if (node == null) {
+      return new Node(x);
+    }
 
+    if (x < node.key) {
+      node.left = insert(node.left, x);
+    } else
+      node.right = insert(node.right, x);
+
+    return balance(node);
   }
 
-  void balance(Node node) {
+  Node balance(Node node) {
+    int factorBalance = node.getBalanceFactor();
 
+    if (factorBalance >= -1 && factorBalance <= 1) {
+      return node;
+    } else if (factorBalance == 2) {
+      int factorBalanceLeft = node.left.getBalanceFactor();
+
+      if (factorBalanceLeft == -1) {
+        node.left = rotateForRight(node.left);
+      }
+
+      node = rotateForLeft(node);
+    } else {
+      int factorBalanceRight = node.right.getBalanceFactor();
+
+      if (factorBalanceRight == 1) {
+        node.right = rotateForLeft(node.right);
+      }
+      node = rotateForRight(node);
+    }
+
+    return node;
   }
+
+  Node rotateForRight(Node node) {
+    Node y = node.left;
+    node.left = y.right;
+    y.right = node;
+
+    return y;
+  }
+
+  Node rotateForLeft(Node node) {
+    Node y = node.right;
+    node.right = y.left;
+    y.left = node;
+
+    return y;
+  }
+
 }
 
 class Tp04 {

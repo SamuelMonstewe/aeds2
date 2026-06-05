@@ -158,12 +158,14 @@ int heigth(struct No *root) {
 int main() {
   struct Arvore *T = (struct Arvore *)malloc(sizeof(struct Arvore));
   T->root = NULL;
-  int A[] = {1, 2, 3, 4, 5, 6, 7, 8};
+  int A[] = {20, 18, 33, 40, 12, 14, 7, 4};
   int i = 0;
   while (i < 8) {
     T->root = inserirRecursivo(T->root, A[i]);
     i++;
   }
-
-  printf("%d", sucessor(T->root)->elemento);
+  struct No *no = busca_arvore(T->root, 20);
+  remover(T, no);
+  percurso_em_ordem(T->root);
+  // printf("%d", heigth(T->root));
 }
