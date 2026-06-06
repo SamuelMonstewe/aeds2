@@ -1,5 +1,7 @@
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -397,6 +399,7 @@ class Node {
 
 class AVL {
   Node root;
+  static int compArvore = 0;
 
   void inorderTraversal() {
     inorderTraversal(root);
@@ -410,12 +413,27 @@ class AVL {
     }
   }
 
-  void search() {
-
+  void search(String x) {
+    search(root, x);
   }
 
-  void search(Node node) {
+  void search(Node node, String x) {
+    compArvore++;
+    if (node == null) {
+      System.out.println("NAO");
+      return;
+    }
+    compArvore++;
+    if (node.key.getNome().compareTo(x) == 0) {
+      System.out.println("SIM");
+      return;
+    }
+    compArvore++;
 
+    if (node.key.getNome().compareTo(x) > 0) {
+      search(root.left, x);
+    } else
+      search(root.right, x);
   }
 
   void insert(Restaurante x) {
@@ -423,10 +441,12 @@ class AVL {
   }
 
   Node insert(Node node, Restaurante x) {
+    compArvore++;
     if (node == null) {
       return new Node(x);
     }
 
+    compArvore++;
     if (node.key.getNome().compareTo(x.getNome()) > 0) {
       node.left = insert(node.left, x);
     } else
@@ -438,10 +458,12 @@ class AVL {
   Node balance(Node node) {
     int factorBalance = node.getBalanceFactor();
 
+    compArvore++;
     if (factorBalance >= -1 && factorBalance <= 1) {
       node.h = node.getHeight();
       return node;
     } else if (factorBalance == 2) {
+      compArvore++;
       int factorBalanceLeft = node.left.getBalanceFactor();
 
       if (factorBalanceLeft < 0) {
@@ -452,6 +474,7 @@ class AVL {
     } else {
       int factorBalanceRight = node.right.getBalanceFactor();
 
+      compArvore++;
       if (factorBalanceRight > 0) {
         node.right = rotateForRight(node.right);
       }
@@ -507,24 +530,34 @@ class Tp04 {
     int id = 0;
     id = s.nextInt();
 
+    long inicio = System.nanoTime();
+    double tempoArvore = 0.0;
     while (id != -1) {
       a.insert(pesquisaSequencialPorId(c, id));
       id = s.nextInt();
     }
-
     s.nextLine();
+    String chave;
 
-    // String chave;
+    chave = s.nextLine();
+    while (!(chave.charAt(0) == 'F' && chave.charAt(1) == 'I' && chave.charAt(2) == 'M')) {
+      System.out.print("raiz ");
+      a.search(a.root, chave);
+      chave = s.nextLine();
+    }
 
-    // chave = s.nextLine();
-    // while (!(chave.charAt(0) == 'F' && chave.charAt(1) == 'I' && chave.charAt(2)
-    // == 'M')) {
-    // System.out.print("raiz ");
-    // a.search(chave);
-    // chave = s.nextLine();
-    // }
+    a.inorderTraversal(a.root);
 
-    a.inorderTraversal();
+    long fim = System.nanoTime();
+    tempoArvore += (fim - inicio) / 1000000.0;
+
+    try (BufferedWriter bw = new BufferedWriter(new FileWriter("897962_arvore_avl.txt"))) {
+      String conteudo = "897962\t" + AVL.compArvore + "\t" + tempoArvore
+          + "\t" + "\n";
+      bw.write(conteudo);
+    } catch (IOException e) {
+      System.out.println(e);
+    }
 
     s.close();
   }
