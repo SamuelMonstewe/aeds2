@@ -408,7 +408,7 @@ class AVL {
   void inorderTraversal(Node node) {
     if (node != null) {
       inorderTraversal(node.left);
-      System.out.println("Fator balanceamento: " + node.getBalanceFactor() + " Elemento: " + node.key.getNome());
+      System.out.println(node.key.formatar());
       inorderTraversal(node.right);
     }
   }
@@ -423,17 +423,21 @@ class AVL {
       System.out.println("NAO");
       return;
     }
+    int result = x.compareTo(node.key.getNome());
     compArvore++;
-    if (node.key.getNome().compareTo(x) == 0) {
+    if (result == 0) {
       System.out.println("SIM");
       return;
     }
     compArvore++;
 
-    if (node.key.getNome().compareTo(x) > 0) {
-      search(root.left, x);
-    } else
-      search(root.right, x);
+    if (result < 0) {
+      System.out.print("esq ");
+      search(node.left, x);
+    } else if (result > 0) {
+      System.out.print("dir ");
+      search(node.right, x);
+    }
   }
 
   void insert(Restaurante x) {
