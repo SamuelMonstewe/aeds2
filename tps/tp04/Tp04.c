@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
-
+#define MAX(a, b) ((a < b) ? b : a)
 typedef struct {
   int hora;
   int minuto;
@@ -325,6 +325,19 @@ void retirar_quebra_de_linha(char *x) {
     }
   }
 }
+int height(RedBlackTree *T, Node *root) {
+  if (root == T->nil) {
+    return -1;
+  }
+
+  if (root->left == T->nil && root->right == T->nil) {
+    return 0;
+  }
+  int hl = 1 + height(T, root->left);
+  int hr = 1 + height(T, root->right);
+
+  return MAX(hl, hr);
+}
 #define MATRICULA 897962
 int main() {
   Colecao_Restaurantes *c = ler_csv();
@@ -356,6 +369,7 @@ int main() {
   }
 
   inorder_traversal(T, T->root);
+
   int fim = clock();
   double tempoArvore = ((double)(fim - inicio)) / CLOCKS_PER_SEC;
 
