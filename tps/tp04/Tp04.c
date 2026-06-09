@@ -434,7 +434,119 @@ void mostrarTabela(HashReserva *t) {
     printf("%s\n", (t->vet[i] != NULL) ? t->vet[i]->nome : "null");
   }
 }
+typedef struct Celula {
+  struct Celula *prox;
+  struct Celula *ant;
+  Restaurante *elemento;
+} Celula;
+
+typedef struct Lista {
+  struct Celula *primeiro;
+  struct Celula *ultimo;
+} Lista;
+
+void inserirInicio(Lista *lista, Restaurante *x) {
+  Celula *nova = (Celula *)malloc(sizeof(Celula));
+  nova->elemento = x;
+  nova->ant = NULL;
+  nova->prox = NULL;
+
+  if (lista->primeiro == lista->ultimo) {
+    lista->ultimo->prox = nova;
+    nova->ant = lista->ultimo;
+    lista->ultimo = nova;
+    return;
+  }
+
+  nova->ant = lista->primeiro;
+  nova->prox = lista->primeiro->prox;
+  lista->primeiro->prox->ant = nova;
+  lista->primeiro->prox = nova;
+  nova = NULL;
+}
+
+Restaurante *pesquisarLista(Lista *lista, char *nome) {
+  if (lista->primeiro == lista->ultimo) {
+    return NULL;
+  }
+
+  Celula *tmp = lista->primeiro->prox;
+
+  while (tmp != NULL) {
+    if (strcmp(tmp->elemento->nome, nome) == 0) {
+      return tmp->elemento;
+    }
+
+    tmp = tmp->prox;
+  }
+
+  return NULL;
+}
+typedef struct HashEncadeado {
+  Lista *vet[31];
+} HashEncadeado;
+
+Lista *newLista() {
+  Lista *l = (Lista *)malloc(sizeof(Lista));
+  l->primeiro = (Celula *)malloc(sizeof(Celula));
+  l->ultimo = l->primeiro;
+
+  return l;
+}
+HashEncadeado *newHashEncadeado() {
+  HashEncadeado *t = (HashEncadeado *)malloc(sizeof(HashEncadeado));
+
+  for (int i = 0; i < 31; i++) {
+    t->vet[i] = newLista();
+  }
+
+  return t;
+}
+
+Celula *newCelula(Restaurante *r) {
+  Celula *c = (Celula *)malloc(sizeof(Celula));
+  c->elemento = r;
+  c->prox = NULL;
+  c->ant = NULL;
+
+  return c;
+}
+
+int hashEncadeado(int m, char *nome) { return somaAsc(nome) % m; }
+
+void inserirHashEncadeado(HashEncadeado *t, Restaurante *r) {
+  inserirInicio(t->vet[hashEncadeado(31, r->nome)], r);
+}
+
+void imprimirHashEncadeado(HashEncadeado *t) {
+  for (int i = 0; i < 31; i++) {
+    Lista *l = t->vet[i];
+
+    if (l->primeiro == l->ultimo) {
+      printf("null");
+    } else {
+      Celula *tmp = l->primeiro->prox;
+      while (tmp != NULL) {
+        printf("%s -> ", tmp->elemento->nome);
+        tmp = tmp->prox;
+      }
+    }
+    printf("\n");
+  }
+}
+
+Pair pesquisarHashEncadeado(HashEncadeado *t, char *nome) {
+  int pos = hashEncadeado(31, nome);
+  Restaurante *r = pesquisarLista(t->vet[pos], nome);
+
+  if (r == NULL) {
+    return (Pair){-1, r};
+  }
+
+  return (Pair){pos, r};
+}
 #define MATRICULA 897962
+
 int main() {
   Colecao_Restaurantes *c = ler_csv();
   char s[500];
@@ -472,24 +584,64 @@ int main() {
 
   // FILE *logArvore = fopen("897962_arvore_bicolor.txt", "w");
   // if (logArvore) {
-  //   fprintf(logArvore, "%d\t%d\t%lf\t", MATRICULA, compArvore, tempoArvore);
-  //   fclose(logArvore);
+  //   fprintf(logArvore, "%d\t%d\t%lf\t", MATRICULA, compArvore,
+  //   tempoArvore); fclose(logArvore);
   // }
 
   // questão 3
 
-  HashReserva *t = newHashReserva(31, 19);
+  // HashReserva *t = newHashReserva(31, 19);
+
+  // int id;
+
+  // scanf("%d", &id);
+
+  // int inicio = clock();
+  // while (id != -1) {
+  //   Restaurante *r = pesquisa_sequencial_por_id(c, id);
+  //   if (!inserirHashReserva(t, r)) {
+  //     printf("%s\n", r->nome);
+  //   }
+  //   scanf("%d", &id);
+  // }
+
+  // char search[500];
+
+  // scanf(" %[^\n]", search);
+  // while (strcmp(search, "FIM") != 0) {
+  //   Pair r = pesquisar(t, search);
+
+  //   if (r.value != NULL) {
+  //     char buff[500];
+  //     formatar_restaurante(r.value, buff);
+  //     printf("%d %s\n", r.key, buff);
+  //   } else {
+  //     printf("%d\n", -1);
+  //   }
+
+  //   scanf(" %[^\n]", search);
+  // }
+
+  // int fim = clock();
+
+  // double tempoReserva = ((double)(fim - inicio)) / CLOCKS_PER_SEC;
+  // FILE *logArvore = fopen("897962_hash_reserva.txt", "w");
+  // if (logArvore) {
+  //   fprintf(logArvore, "%d\t%d\t%lf\t", MATRICULA, compArvore,
+  //   tempoReserva); fclose(logArvore);
+  // }
+
+  // questão 4
+
+  HashEncadeado *t = newHashEncadeado();
 
   int id;
 
   scanf("%d", &id);
 
-  int inicio = clock();
   while (id != -1) {
-    Restaurante *r = pesquisa_sequencial_por_id(c, id);
-    if (!inserirHashReserva(t, r)) {
-      printf("%s\n", r->nome);
-    }
+    inserirHashEncadeado(t, pesquisa_sequencial_por_id(c, id));
+
     scanf("%d", &id);
   }
 
@@ -497,7 +649,7 @@ int main() {
 
   scanf(" %[^\n]", search);
   while (strcmp(search, "FIM") != 0) {
-    Pair r = pesquisar(t, search);
+    Pair r = pesquisarHashEncadeado(t, search);
 
     if (r.value != NULL) {
       char buff[500];
@@ -508,14 +660,5 @@ int main() {
     }
 
     scanf(" %[^\n]", search);
-  }
-
-  int fim = clock();
-
-  double tempoReserva = ((double)(fim - inicio)) / CLOCKS_PER_SEC;
-  FILE *logArvore = fopen("897962_hash_reserva.txt", "w");
-  if (logArvore) {
-    fprintf(logArvore, "%d\t%d\t%lf\t", MATRICULA, compArvore, tempoReserva);
-    fclose(logArvore);
   }
 }
