@@ -338,44 +338,184 @@ int height(RedBlackTree *T, Node *root) {
 
   return MAX(hl, hr);
 }
+
+typedef struct HashReserva {
+  int m;
+  int r;
+  Restaurante *vet[50];
+} HashReserva;
+
+int compHashReserva = 0;
+HashReserva *newHashReserva(int m, int r) {
+  HashReserva *t = (HashReserva *)malloc(sizeof(HashReserva));
+  t->m = m;
+  t->r = r;
+
+  for (int i = 0; i < 50; i++) {
+    t->vet[i] = NULL;
+  }
+
+  return t;
+}
+
+int somaAsc(char *nome) {
+  int s = 0;
+
+  while (*nome) {
+    s += *nome++;
+  }
+
+  return s;
+}
+int hashReserva(int m, char *nome) { return somaAsc(nome) % m; }
+
+int isPosicaoVazia(HashReserva *t, int pos) {
+  return (t->vet[pos] == NULL) ? 1 : 0;
+}
+
+int inserirHashReserva(HashReserva *t, Restaurante *r) {
+  int pos = hashReserva(t->m, r->nome);
+
+  compHashReserva++;
+  if (t->vet[pos] == NULL) {
+    t->vet[pos] = r;
+    return 1;
+  }
+
+  int i = t->m;
+
+  compHashReserva++;
+  while (i < t->m + t->r && !isPosicaoVazia(t, i)) {
+    compHashReserva++;
+    i++;
+  }
+
+  compHashReserva++;
+  if (i >= t->m + t->r) {
+    return 0;
+  }
+
+  t->vet[i] = r;
+
+  return 1;
+}
+
+// crio um pair para conseguir retornar informações sobre o hash no metodo
+// pesquisar
+typedef struct Pair {
+  int key;
+  Restaurante *value;
+} Pair;
+
+Pair pesquisar(HashReserva *t, char *nome) {
+  int pos = hashReserva(t->m, nome);
+  compHashReserva++;
+  if (t->vet[pos] != NULL && strcmp(t->vet[pos]->nome, nome) == 0) {
+    return (Pair){pos, t->vet[pos]};
+  }
+
+  int i = t->m;
+
+  compHashReserva++;
+  while (i < t->m + t->r) {
+    compHashReserva += 2;
+    if (strcmp(t->vet[i]->nome, nome) == 0) {
+      return (Pair){i, t->vet[i]};
+    }
+
+    i++;
+  }
+
+  return (Pair){-1, NULL};
+}
+
+void mostrarTabela(HashReserva *t) {
+  for (int i = 0; i < t->m + t->r; i++) {
+    printf("%s\n", (t->vet[i] != NULL) ? t->vet[i]->nome : "null");
+  }
+}
 #define MATRICULA 897962
 int main() {
   Colecao_Restaurantes *c = ler_csv();
   char s[500];
   Restaurante *rs[500];
 
-  RedBlackTree *T = (RedBlackTree *)malloc(sizeof(RedBlackTree));
-  T->nil = (Node *)malloc(sizeof(Node));
-  T->nil->color = BLACK;
-  T->root = T->nil;
+  // questão 1
+  //  RedBlackTree *T = (RedBlackTree *)malloc(sizeof(RedBlackTree));
+  //  T->nil = (Node *)malloc(sizeof(Node));
+  //  T->nil->color = BLACK;
+  //  T->root = T->nil;
 
-  int id = 0;
-  fgets(s, sizeof(s), stdin);
-  sscanf(s, "%d", &id);
+  // int id = 0;
+  // fgets(s, sizeof(s), stdin);
+  // sscanf(s, "%d", &id);
+
+  // int inicio = clock();
+  // while (id != -1) {
+  //   Restaurante *r = pesquisa_sequencial_por_id(c, id);
+  //   T->root = RB_insert_wrapper(T, r);
+  //   fgets(s, sizeof(s), stdin);
+  //   sscanf(s, "%d", &id);
+  // }
+
+  // while (fgets(s, sizeof(s), stdin) != NULL &&
+  //        !(s[0] == 'F' && s[1] == 'I' && s[2] == 'M')) {
+  //   retirar_quebra_de_linha(s);
+  //   printf("raiz ");
+  //   search(T, T->root, s);
+  // }
+
+  // inorder_traversal(T, T->root);
+
+  // int fim = clock();
+  // double tempoArvore = ((double)(fim - inicio)) / CLOCKS_PER_SEC;
+
+  // FILE *logArvore = fopen("897962_arvore_bicolor.txt", "w");
+  // if (logArvore) {
+  //   fprintf(logArvore, "%d\t%d\t%lf\t", MATRICULA, compArvore, tempoArvore);
+  //   fclose(logArvore);
+  // }
+
+  // questão 3
+
+  HashReserva *t = newHashReserva(31, 19);
+
+  int id;
+
+  scanf("%d", &id);
 
   int inicio = clock();
   while (id != -1) {
     Restaurante *r = pesquisa_sequencial_por_id(c, id);
-    T->root = RB_insert_wrapper(T, r);
-    fgets(s, sizeof(s), stdin);
-    sscanf(s, "%d", &id);
+    if (!inserirHashReserva(t, r)) {
+      printf("%s\n", r->nome);
+    }
+    scanf("%d", &id);
   }
 
-  while (fgets(s, sizeof(s), stdin) != NULL &&
-         !(s[0] == 'F' && s[1] == 'I' && s[2] == 'M')) {
-    retirar_quebra_de_linha(s);
-    printf("raiz ");
-    search(T, T->root, s);
-  }
+  char search[500];
 
-  inorder_traversal(T, T->root);
+  scanf(" %[^\n]", search);
+  while (strcmp(search, "FIM") != 0) {
+    Pair r = pesquisar(t, search);
+
+    if (r.value != NULL) {
+      char buff[500];
+      formatar_restaurante(r.value, buff);
+      printf("%d %s\n", r.key, buff);
+    } else {
+      printf("%d\n", -1);
+    }
+
+    scanf(" %[^\n]", search);
+  }
 
   int fim = clock();
-  double tempoArvore = ((double)(fim - inicio)) / CLOCKS_PER_SEC;
 
-  FILE *logArvore = fopen("897962_arvore_bicolor.txt", "w");
+  double tempoReserva = ((double)(fim - inicio)) / CLOCKS_PER_SEC;
+  FILE *logArvore = fopen("897962_hash_reserva.txt", "w");
   if (logArvore) {
-    fprintf(logArvore, "%d\t%d\t%lf\t", MATRICULA, compArvore, tempoArvore);
+    fprintf(logArvore, "%d\t%d\t%lf\t", MATRICULA, compArvore, tempoReserva);
     fclose(logArvore);
   }
 }
