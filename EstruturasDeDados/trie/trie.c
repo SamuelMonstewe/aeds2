@@ -43,22 +43,16 @@ void insert(Node *node, char *word) {
 char *search(Node *node, char *s) {}
 
 void print(Node *node, char *s) {
-  char str_tmp[2];
-  str_tmp[0] = node->letter;
-  str_tmp[1] = '\0';
-  char d[40];
-
-  strcpy(d, s);
-  strcat(d, str_tmp);
-
   if (node->endWord == true) {
-    printf("%s ", d);
-  } else {
-    for (int j = 0; j < SIZE; j++) {
-      Node *n = node->vet[j];
-      if (n != NULL) {
-        print(n, d);
-      }
+    printf("%s\n", s);
+  }
+
+  for (int j = 0; j < SIZE; j++) {
+    if (node->vet[j] != NULL) {
+      char d[100];
+      sprintf(d, "%s%c", s, node->vet[j]->letter);
+
+      print(node->vet[j], d);
     }
   }
 }
@@ -69,6 +63,7 @@ int main() {
   insert(t->root, "mar");
   insert(t->root, "milho");
   insert(t->root, "molho");
+  insert(t->root, "marin");
 
   print(t->root, "");
 }
