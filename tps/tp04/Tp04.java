@@ -7,7 +7,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Scanner;
 
-class Restaurante {
+class Restaurante implements Comparable<Restaurante> {
   private int id;
   private String nome;
   private String cidade;
@@ -19,6 +19,9 @@ class Restaurante {
   private Hora horarioFechamento;
   private Data dataAbertura;
   private boolean aberto;
+
+  public Restaurante() {
+  }
 
   public Restaurante(
       int id,
@@ -217,6 +220,20 @@ class Restaurante {
         horarioFechamento.formatar(),
         dataAbertura.formatar(), aberto);
   }
+
+  @Override
+  public String toString() {
+    return String.format("[%d ## %s ## %s ## %d ## %.1f ## [%s] ## %s ## %s-%s ## %s ## %b]", id, nome, cidade,
+        capacidade, notaMedia, tiposCozinhaFormatado(), faixaPrecoFormatado(), horarioAbertura.formatar(),
+        horarioFechamento.formatar(),
+        dataAbertura.formatar(), aberto);
+
+  }
+
+  @Override
+  public int compareTo(Restaurante outro) {
+    return this.getNome().compareTo(outro.getNome());
+  }
 }
 
 class ColecaoRestaurantes {
@@ -357,13 +374,13 @@ class Data {
   }
 }
 
-class Node {
+class Node<T extends Comparable<T>> {
   int h;
-  Restaurante key;
-  Node left;
-  Node right;
+  T key;
+  Node<T> left;
+  Node<T> right;
 
-  public Node(Restaurante x) {
+  public Node(T x) {
     this.left = null;
     this.right = null;
     this.key = x;
@@ -374,7 +391,7 @@ class Node {
     return getHeight(this);
   }
 
-  int getHeight(Node node) {
+  int getHeight(Node<T> node) {
     if (node == null) {
       return -1;
     }
@@ -389,7 +406,7 @@ class Node {
     return getBalanceFactor(this);
   }
 
-  int getBalanceFactor(Node node) {
+  int getBalanceFactor(Node<T> node) {
     int h_r = getHeight(node.right);
     int h_l = getHeight(node.left);
 
@@ -397,69 +414,72 @@ class Node {
   }
 }
 
-class AVL {
-  Node root;
+class AVL<T extends Comparable<T>> {
+  Node<T> root;
   static int compArvore = 0;
 
   void inorderTraversal() {
     inorderTraversal(root);
   }
 
-  void inorderTraversal(Node node) {
+  void inorderTraversal(Node<T> node) {
     if (node != null) {
       inorderTraversal(node.left);
-      System.out.println(node.key.formatar());
+      // O método padrão toString() substitui o método customizado formatar()
+      System.out.println(node.key.toString());
       inorderTraversal(node.right);
     }
   }
 
-  void search(String x) {
-    search(root, x);
+  boolean search(T x) {
+    System.out.print("raiz ");
+    return search(root, x);
   }
 
-  void search(Node node, String x) {
+  boolean search(Node<T> node, T x) {
     compArvore++;
     if (node == null) {
-      System.out.println("NAO");
-      return;
+      return false;
     }
-    int result = x.compareTo(node.key.getNome());
+
+    int result = x.compareTo(node.key);
     compArvore++;
+
     if (result == 0) {
-      System.out.println("SIM");
-      return;
+      return true;
     }
     compArvore++;
 
     if (result < 0) {
       System.out.print("esq ");
-      search(node.left, x);
-    } else if (result > 0) {
+      return search(node.left, x);
+    } else {
       System.out.print("dir ");
-      search(node.right, x);
+      return search(node.right, x);
     }
   }
 
-  void insert(Restaurante x) {
+  void insert(T x) {
     this.root = insert(this.root, x);
   }
 
-  Node insert(Node node, Restaurante x) {
+  Node<T> insert(Node<T> node, T x) {
     compArvore++;
     if (node == null) {
-      return new Node(x);
+      return new Node<>(x);
     }
 
     compArvore++;
-    if (node.key.getNome().compareTo(x.getNome()) > 0) {
+    if (node.key.compareTo(x) > 0) {
       node.left = insert(node.left, x);
-    } else
+    } else {
       node.right = insert(node.right, x);
+    }
 
     return balance(node);
   }
 
-  Node balance(Node node) {
+  Node<T> balance(Node<T> node) {
     int factorBalance = node.getBalanceFactor();
 
     compArvore++;
@@ -488,8 +508,8 @@ class AVL {
     return node;
   }
 
-  Node rotateForRight(Node node) {
-    Node y = node.left;
+  Node<T> rotateForRight(Node<T> node) {
+    Node<T> y = node.left;
     node.left = y.right;
     y.right = node;
 
@@ -499,8 +519,8 @@ class AVL {
     return y;
   }
 
-  Node rotateForLeft(Node node) {
-    Node y = node.right;
+  Node<T> rotateForLeft(Node<T> node) {
+    Node<T> y = node.right;
     node.right = y.left;
     y.left = node;
 
@@ -509,10 +529,115 @@ class AVL {
 
     return y;
   }
+}
+
+class NodeBST {
+  int capacity;
+  AVL<String> rootAVL;
+  NodeBST left;
+  NodeBST right;
+
+  public NodeBST() {
+
+  }
+
+  public NodeBST(int capacity, AVL<String> root, NodeBST left, NodeBST right) {
+    this.capacity = capacity;
+    this.rootAVL = root;
+    this.left = left;
+    this.right = right;
+  }
+}
+
+class ArvoreBinaria {
+  NodeBST root;
+
+  public ArvoreBinaria() {
+    this.root = null;
+  }
+
+  NodeBST insert(int capacity, String nome) {
+    root = insert(root, capacity, nome);
+    return root;
+
+  }
+
+  NodeBST insert(NodeBST node, int capacity, String nome) {
+    if (node == null) {
+      NodeBST newNode = new NodeBST(capacity, new AVL<String>(), null, null);
+      newNode.rootAVL.insert(nome);
+      return newNode;
+    }
+
+    if (node.capacity == capacity) {
+      node.rootAVL.insert(nome);
+    } else if (capacity < node.capacity) {
+      node.left = insert(node.left, capacity, nome);
+    } else if (capacity > node.capacity) {
+      node.right = insert(node.right, capacity, nome);
+    }
+
+    return node;
+  }
+
+  boolean search(String nome) {
+    System.out.print("RAIZ ");
+    if (search(root, nome)) {
+      System.out.print("SIM ");
+      return true;
+    }
+
+    System.out.println("NAO");
+    return false;
+  }
+
+  boolean search(NodeBST node, String nome) {
+    if (node == null)
+      return false;
+
+    if (node.rootAVL.search(nome)) {
+      return true;
+    }
+
+    System.out.print("ESQ ");
+    if (search(node.left, nome)) {
+      return true;
+    }
+
+    System.out.print("DIR ");
+    if (search(node.right, nome)) {
+      return true;
+    }
+
+    return false;
+  }
+
+  void inorderTraversal(NodeBST node) {
+    if (node != null) {
+      inorderTraversal(node.left);
+      node.rootAVL.inorderTraversal();
+      inorderTraversal(node.right);
+    }
+  }
+
+  void inorderTraversal() {
+    inorderTraversal(root);
+  }
 
 }
 
 class Tp04 {
+  public static Restaurante pesquisaSequencialPorNome(Restaurante[] rs, String nome, int end) {
+
+    for (int i = 0; i < end; i++) {
+      if (rs[i].getNome().compareTo(nome) == 0) {
+        return rs[i];
+      }
+    }
+
+    return null;
+  }
+
   public static Restaurante pesquisaSequencialPorId(ColecaoRestaurantes c, int id) {
     Restaurante[] r = c.getRestaurantes();
     for (Restaurante restaurante : r) {
@@ -528,41 +653,76 @@ class Tp04 {
     Scanner s = new Scanner(System.in);
     ColecaoRestaurantes c = ColecaoRestaurantes.lerCsv();
 
-    // Restaurante[] rs = new Restaurante[500];
+    Restaurante[] rs = new Restaurante[500];
 
-    AVL a = new AVL();
-    int id = 0;
+    // questão 1
+    // AVL<Restaurante> a = new AVL<>();
+    // int id = 0;
+    // id = s.nextInt();
+
+    // long inicio = System.nanoTime();
+    // double tempoArvore = 0.0;
+
+    // while (id != -1) {
+    // a.insert(pesquisaSequencialPorId(c, id));
+    // id = s.nextInt();
+    // }
+    // s.nextLine();
+    // String chave;
+
+    // chave = s.nextLine();
+
+    // while (!chave.equals("FIM")) {
+    // System.out.print("raiz ");
+    // Restaurante restauranteBusca = new Restaurante();
+    // restauranteBusca.setNome(chave);
+
+    // a.search(restauranteBusca);
+
+    // chave = s.nextLine();
+    // }
+
+    // a.inorderTraversal();
+
+    // long fim = System.nanoTime();
+    // tempoArvore += (fim - inicio) / 1000000.0;
+
+    // try (BufferedWriter bw = new BufferedWriter(new
+    // FileWriter("897962_arvore_avl.txt"))) {
+    // String conteudo = "897962\t" + AVL.compArvore + "\t" + tempoArvore
+    // + "\t" + "\n";
+    // bw.write(conteudo);
+    // } catch (IOException e) {
+    // System.out.println(e);
+    // }
+
+    // questão 6
+    ArvoreBinaria a = new ArvoreBinaria();
+    int id, end = 0;
+
     id = s.nextInt();
 
-    long inicio = System.nanoTime();
-    double tempoArvore = 0.0;
     while (id != -1) {
-      a.insert(pesquisaSequencialPorId(c, id));
+      Restaurante r = pesquisaSequencialPorId(c, id);
+      rs[end++] = r;
+      int x = r.getCapacidade() % 15;
+      a.insert(x, r.getNome());
       id = s.nextInt();
     }
+
+    String nome;
     s.nextLine();
-    String chave;
+    nome = s.nextLine();
 
-    chave = s.nextLine();
-    while (!(chave.charAt(0) == 'F' && chave.charAt(1) == 'I' && chave.charAt(2) == 'M')) {
-      System.out.print("raiz ");
-      a.search(a.root, chave);
-      chave = s.nextLine();
+    while (!(nome.equals("FIM"))) {
+      if (a.search(nome)) {
+        Restaurante r = pesquisaSequencialPorNome(rs, nome, end);
+
+        System.out.println(r.formatar());
+      }
+
+      nome = s.nextLine();
     }
-
-    a.inorderTraversal(a.root);
-
-    long fim = System.nanoTime();
-    tempoArvore += (fim - inicio) / 1000000.0;
-
-    try (BufferedWriter bw = new BufferedWriter(new FileWriter("897962_arvore_avl.txt"))) {
-      String conteudo = "897962\t" + AVL.compArvore + "\t" + tempoArvore
-          + "\t" + "\n";
-      bw.write(conteudo);
-    } catch (IOException e) {
-      System.out.println(e);
-    }
-
     s.close();
   }
 }
