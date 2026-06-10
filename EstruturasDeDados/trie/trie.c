@@ -40,7 +40,21 @@ void insert(Node *node, char *word) {
 
   insert(node->vet[index], word + 1);
 }
-char *search(Node *node, char *s) {}
+void search(Node *node, char *s) {
+  if (s[0] == '\0' && node->endWord) {
+    printf("YES");
+    return;
+  }
+
+  int index = s[0] - 'a';
+
+  if (node->vet[index] == NULL) {
+    printf("NO");
+    return;
+  }
+
+  search(node->vet[index], s + 1);
+}
 
 void print(Node *node, char *s) {
   if (node->endWord == true) {
@@ -64,6 +78,5 @@ int main() {
   insert(t->root, "milho");
   insert(t->root, "molho");
   insert(t->root, "marin");
-
-  print(t->root, "");
+  search(t->root, "marin");
 }
