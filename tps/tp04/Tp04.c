@@ -492,27 +492,20 @@ void inserirInicioOrdenado(Lista *lista, Restaurante *x) {
   i->prox = nova;
   lista->ultimo = nova;
 }
-Restaurante *pesquisarLista(Lista *lista, char *x) {
+Restaurante *pesquisarLista(Lista *lista, char *nome) {
   if (lista->primeiro == lista->ultimo) {
     return NULL;
   }
 
-  Celula *i = lista->primeiro->prox;
+  Celula *tmp = lista->primeiro->prox;
 
-  while (i != NULL) {
-    Restaurante *r = (Restaurante *)i->elemento;
-
-    if (strcmp(x, r->nome) == 0) {
-      return r;
+  while (tmp != NULL) {
+    Restaurante *r = (Restaurante *)tmp->elemento;
+    if (strcmp(r->nome, nome) == 0) {
+      return (Restaurante *)tmp->elemento;
     }
 
-    if (strcmp(x, r->nome) < 0) {
-      return NULL;
-    }
-
-    printf("%s ", r->nome);
-
-    i = i->prox;
+    tmp = tmp->prox;
   }
 
   return NULL;
@@ -651,10 +644,17 @@ Restaurante *search_list(Lista *lista, char *x) {
 
   while (i != NULL) {
     Restaurante *r = (Restaurante *)i->elemento;
-    printf("%s ", r->nome);
+
     if (strcmp(x, r->nome) == 0) {
       return r;
     }
+
+    if (strcmp(x, r->nome) < 0) {
+      return NULL;
+    }
+
+    printf("%s ", r->nome);
+
     i = i->prox;
   }
 
