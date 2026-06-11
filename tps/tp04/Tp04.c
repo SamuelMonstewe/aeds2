@@ -437,7 +437,7 @@ void mostrarTabela(HashReserva *t) {
 typedef struct Celula {
   struct Celula *prox;
   struct Celula *ant;
-  Restaurante *elemento;
+  void *elemento;
 } Celula;
 
 typedef struct Lista {
@@ -445,7 +445,7 @@ typedef struct Lista {
   struct Celula *ultimo;
 } Lista;
 
-void inserirInicio(Lista *lista, Restaurante *x) {
+void inserirInicio(Lista *lista, void *x) {
   Celula *nova = (Celula *)malloc(sizeof(Celula));
   nova->elemento = x;
   nova->ant = NULL;
@@ -473,8 +473,9 @@ Restaurante *pesquisarLista(Lista *lista, char *nome) {
   Celula *tmp = lista->primeiro->prox;
 
   while (tmp != NULL) {
-    if (strcmp(tmp->elemento->nome, nome) == 0) {
-      return tmp->elemento;
+    Restaurante *r = (Restaurante *)tmp->elemento;
+    if (strcmp(r->nome, nome) == 0) {
+      return (Restaurante *)tmp->elemento;
     }
 
     tmp = tmp->prox;
@@ -527,7 +528,8 @@ void imprimirHashEncadeado(HashEncadeado *t) {
     } else {
       Celula *tmp = l->primeiro->prox;
       while (tmp != NULL) {
-        printf("%s -> ", tmp->elemento->nome);
+        Restaurante *r = (Restaurante *)tmp->elemento;
+        printf("%s -> ", r->nome);
         tmp = tmp->prox;
       }
     }
@@ -627,8 +629,8 @@ int main() {
   // double tempoReserva = ((double)(fim - inicio)) / CLOCKS_PER_SEC;
   // FILE *logArvore = fopen("897962_hash_reserva.txt", "w");
   // if (logArvore) {
-  //   fprintf(logArvore, "%d\t%d\t%lf\t", MATRICULA, compArvore,
-  //   tempoReserva); fclose(logArvore);
+  //   fprintf(logArvore, "%d\t%d\t%lf\t", MATRICULA, compArvore, tempoReserva);
+  //   fclose(logArvore);
   // }
 
   // questão 4
