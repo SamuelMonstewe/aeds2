@@ -626,6 +626,119 @@ class ArvoreBinaria {
 
 }
 
+class Hash {
+  NodeTRIE[] table;
+  int m;
+
+  public Hash(int m) {
+    table = new NodeTRIE[m];
+    this.m = m;
+  }
+
+  public int getIndex(char c) {
+    Trie.compTrie++;
+    if (c == ' ') {
+      return 62;
+    }
+    Trie.compTrie++;
+    if (c >= '0' && c <= '9') {
+      return c - '0';
+    }
+    Trie.compTrie++;
+    if (c >= 'A' && c <= 'Z') {
+      return (c - 'A') + 10;
+    }
+    Trie.compTrie++;
+    if (c >= 'a' && c <= 'z') {
+      return (c - 'a') + 36;
+    }
+
+    return -1;
+  }
+
+  public int getSize() {
+    return m;
+  }
+}
+
+class NodeTRIE {
+  Hash hash;
+  char letter;
+  boolean end;
+
+  public NodeTRIE(char c) {
+    hash = new Hash(63);
+    end = false;
+    letter = c;
+  }
+
+}
+
+class Trie {
+  NodeTRIE root;
+  static int compTrie = 0;
+
+  public Trie() {
+    root = new NodeTRIE(' ');
+  }
+
+  public void insert(String word) {
+    insert(root, word, 0);
+  }
+
+  public void insert(NodeTRIE node, String word, int ponteiro) {
+    compTrie++;
+    if (ponteiro >= word.length()) {
+      node.end = true;
+      return;
+    }
+
+    int idx = node.hash.getIndex(word.charAt(ponteiro));
+
+    compTrie++;
+    if (node.hash.table[idx] == null) {
+      node.hash.table[idx] = new NodeTRIE(word.charAt(ponteiro));
+    }
+
+    insert(node.hash.table[idx], word, ponteiro + 1);
+  }
+
+  public void print() {
+    print(root, "");
+  }
+
+  public void print(NodeTRIE node, String word) {
+    if (node.end == true) {
+      System.out.println(word);
+    }
+
+    for (int i = 0; i < node.hash.getSize(); i++) {
+      NodeTRIE child = node.hash.table[i];
+      if (child != null) {
+        print(child, word + child.letter);
+      }
+    }
+  }
+
+  public boolean search(String word) {
+    return search(root, word, 0);
+  }
+
+  public boolean search(NodeTRIE root, String word, int ponteiro) {
+    if (ponteiro >= word.length() && root.end == true) {
+      return true;
+    }
+    int idx = root.hash.getIndex(word.charAt(ponteiro));
+
+    if (root.hash.table[idx] == null) {
+      return false;
+    }
+
+    System.out.print(root.hash.table[idx].letter + " ");
+    return search(root.hash.table[idx], word, ponteiro + 1);
+  }
+}
+
 class Tp04 {
   public static Restaurante pesquisaSequencialPorNome(Restaurante[] rs, String nome, int end) {
 
@@ -697,31 +810,71 @@ class Tp04 {
     // }
 
     // questão 6
-    ArvoreBinaria a = new ArvoreBinaria();
-    int id, end = 0;
+    // ArvoreBinaria a = new ArvoreBinaria();
+    // int id, end = 0;
 
+    // id = s.nextInt();
+
+    // while (id != -1) {
+    // Restaurante r = pesquisaSequencialPorId(c, id);
+    // rs[end++] = r;
+    // int x = r.getCapacidade() % 15;
+    // a.insert(x, r.getNome());
+    // id = s.nextInt();
+    // }
+
+    // String nome;
+    // s.nextLine();
+    // nome = s.nextLine();
+
+    // while (!(nome.equals("FIM"))) {
+    // if (a.search(nome)) {
+    // Restaurante r = pesquisaSequencialPorNome(rs, nome, end);
+
+    // System.out.println(r.formatar());
+    // }
+
+    // nome = s.nextLine();
+    // }
+
+    // questão 8
+
+    Trie trie = new Trie();
+    int id, end = 0;
     id = s.nextInt();
 
+    long inicio = System.nanoTime();
     while (id != -1) {
       Restaurante r = pesquisaSequencialPorId(c, id);
       rs[end++] = r;
-      int x = r.getCapacidade() % 15;
-      a.insert(x, r.getNome());
+      trie.insert(r.getNome());
       id = s.nextInt();
     }
-
     String nome;
     s.nextLine();
     nome = s.nextLine();
 
     while (!(nome.equals("FIM"))) {
-      if (a.search(nome)) {
+      if (trie.search(nome)) {
         Restaurante r = pesquisaSequencialPorNome(rs, nome, end);
-
+        System.out.print("SIM ");
         System.out.println(r.formatar());
+      } else {
+        System.out.println("NAO");
       }
 
       nome = s.nextLine();
+    }
+    long fim = System.nanoTime();
+
+    double tempoTrie = (fim - inicio) / 1000000.0;
+
+    try (BufferedWriter bw = new BufferedWriter(new FileWriter("897962_arvore_trie_hash.txt"))) {
+      String conteudo = "897962\t" + Trie.compTrie + "\t" + tempoTrie
+          + "\t" + "\n";
+      bw.write(conteudo);
+    } catch (IOException e) {
+      System.out.println(e);
     }
     s.close();
   }
