@@ -1,7 +1,9 @@
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
+
 #define MAX(a, b) ((a < b) ? b : a)
 typedef struct {
   int hora;
@@ -434,9 +436,9 @@ void mostrarTabela(HashReserva *t) {
     printf("%s\n", (t->vet[i] != NULL) ? t->vet[i]->nome : "null");
   }
 }
+// Celula que aceita qualquer tipo por conta de void *
 typedef struct Celula {
   struct Celula *prox;
-  struct Celula *ant;
   void *elemento;
 } Celula;
 
@@ -448,37 +450,69 @@ typedef struct Lista {
 void inserirInicio(Lista *lista, void *x) {
   Celula *nova = (Celula *)malloc(sizeof(Celula));
   nova->elemento = x;
-  nova->ant = NULL;
   nova->prox = NULL;
 
   if (lista->primeiro == lista->ultimo) {
     lista->ultimo->prox = nova;
-    nova->ant = lista->ultimo;
     lista->ultimo = nova;
     return;
   }
 
-  nova->ant = lista->primeiro;
   nova->prox = lista->primeiro->prox;
-  lista->primeiro->prox->ant = nova;
   lista->primeiro->prox = nova;
   nova = NULL;
 }
+void inserirInicioOrdenado(Lista *lista, Restaurante *x) {
+  Celula *nova = (Celula *)malloc(sizeof(Celula));
+  nova->elemento = x;
+  nova->prox = NULL;
 
-Restaurante *pesquisarLista(Lista *lista, char *nome) {
+  if (lista->primeiro == lista->ultimo) {
+    lista->ultimo->prox = nova;
+    lista->ultimo = nova;
+    return;
+  }
+
+  Celula *i = lista->primeiro;
+
+  while (i->prox != NULL) {
+    Restaurante *r = (Restaurante *)i->prox->elemento;
+    // if (x->nome[0] == 'C') {
+    //   printf("Celula atual: %s - Para inserir: %s\n", r->nome, x->nome);
+    // }
+    if (strcmp(x->nome, r->nome) < 0) {
+      nova->prox = i->prox;
+      i->prox = nova;
+      return;
+    }
+
+    i = i->prox;
+  }
+
+  i->prox = nova;
+  lista->ultimo = nova;
+}
+Restaurante *pesquisarLista(Lista *lista, char *x) {
   if (lista->primeiro == lista->ultimo) {
     return NULL;
   }
 
-  Celula *tmp = lista->primeiro->prox;
+  Celula *i = lista->primeiro->prox;
 
-  while (tmp != NULL) {
-    Restaurante *r = (Restaurante *)tmp->elemento;
-    if (strcmp(r->nome, nome) == 0) {
-      return (Restaurante *)tmp->elemento;
+  while (i != NULL) {
+    Restaurante *r = (Restaurante *)i->elemento;
+
+    if (strcmp(x, r->nome) == 0) {
+      return r;
     }
 
-    tmp = tmp->prox;
+    if (strcmp(x, r->nome) < 0) {
+      return NULL;
+    }
+
+    printf("%s ", r->nome);
+
+    i = i->prox;
   }
 
   return NULL;
@@ -491,7 +525,7 @@ Lista *newLista() {
   Lista *l = (Lista *)malloc(sizeof(Lista));
   l->primeiro = (Celula *)malloc(sizeof(Celula));
   l->ultimo = l->primeiro;
-
+  l->ultimo->prox = NULL;
   return l;
 }
 HashEncadeado *newHashEncadeado() {
@@ -504,11 +538,10 @@ HashEncadeado *newHashEncadeado() {
   return t;
 }
 
-Celula *newCelula(Restaurante *r) {
+Celula *newCelula(void *x) {
   Celula *c = (Celula *)malloc(sizeof(Celula));
-  c->elemento = r;
+  c->elemento = x;
   c->prox = NULL;
-  c->ant = NULL;
 
   return c;
 }
@@ -549,6 +582,112 @@ Pair pesquisarHashEncadeado(HashEncadeado *t, char *nome) {
 }
 #define MATRICULA 897962
 
+typedef struct NodeBST {
+  Lista *lista;
+  struct NodeBST *left;
+  struct NodeBST *right;
+  char letter;
+} NodeBST;
+
+typedef struct ArvoreBinaria {
+  NodeBST *root;
+} ArvoreBinaria;
+
+ArvoreBinaria *newArvoreBinaria() {
+  ArvoreBinaria *t = (ArvoreBinaria *)malloc(sizeof(NodeBST));
+  t->root = NULL;
+
+  return t;
+}
+NodeBST *newNodeBST(Restaurante *r) {
+  NodeBST *n = (NodeBST *)malloc(sizeof(NodeBST));
+  n->left = NULL;
+  n->right = NULL;
+  n->letter = r->nome[0];
+  n->lista = newLista();
+  inserirInicioOrdenado(n->lista, r);
+
+  return n;
+}
+NodeBST *insert(NodeBST *root, Restaurante *r) {
+  if (root == NULL) {
+    return newNodeBST(r);
+  }
+
+  // printf("%c %s\n", root->letter, r->nome);
+
+  if (root->letter == r->nome[0]) {
+    inserirInicioOrdenado(root->lista, r);
+  } else if (r->nome[0] < root->letter) {
+    root->left = insert(root->left, r);
+  } else if (r->nome[0] > root->letter) {
+    root->right = insert(root->right, r);
+  }
+
+  return root;
+}
+
+void print_list(Lista *lista) {
+  if (lista->primeiro == lista->ultimo) {
+    return;
+  }
+
+  Celula *i = lista->primeiro->prox;
+
+  while (i != NULL) {
+    Restaurante *r = (Restaurante *)i->elemento;
+    printf("| %s |-> ", r->nome);
+
+    i = i->prox;
+  }
+}
+
+Restaurante *search_list(Lista *lista, char *x) {
+  if (lista->primeiro == lista->ultimo) {
+    return NULL;
+  }
+
+  Celula *i = lista->primeiro->prox;
+
+  while (i != NULL) {
+    Restaurante *r = (Restaurante *)i->elemento;
+    printf("%s ", r->nome);
+    if (strcmp(x, r->nome) == 0) {
+      return r;
+    }
+    i = i->prox;
+  }
+
+  return NULL;
+}
+void inorder_traversal_bst(NodeBST *root) {
+  if (root != NULL) {
+    print_list(root->lista);
+    printf("\n");
+    inorder_traversal_bst(root->left);
+
+    // printf("%c ", root->letter);
+    inorder_traversal_bst(root->right);
+  }
+}
+
+Restaurante *search_bst(NodeBST *root, char *s) {
+  if (root == NULL) {
+    return NULL;
+  }
+
+  if (root->letter == s[0]) {
+    return search_list(root->lista, s);
+  }
+
+  if (s[0] < root->letter) {
+    printf("ESQ ");
+    return search_bst(root->left, s);
+  }
+
+  printf("DIR ");
+  return search_bst(root->right, s);
+}
 int main() {
   Colecao_Restaurantes *c = ler_csv();
   char s[500];
@@ -635,32 +774,64 @@ int main() {
 
   // questão 4
 
-  HashEncadeado *t = newHashEncadeado();
+  // HashEncadeado *t = newHashEncadeado();
+
+  // int id;
+
+  // scanf("%d", &id);
+
+  // while (id != -1) {
+  //   inserirHashEncadeado(t, pesquisa_sequencial_por_id(c, id));
+
+  //   scanf("%d", &id);
+  // }
+
+  // char search[500];
+
+  // scanf(" %[^\n]", search);
+  // while (strcmp(search, "FIM") != 0) {
+  //   Pair r = pesquisarHashEncadeado(t, search);
+
+  //   if (r.value != NULL) {
+  //     char buff[500];
+  //     formatar_restaurante(r.value, buff);
+  //     printf("%d %s\n", r.key, buff);
+  //   } else {
+  //     printf("%d\n", -1);
+  //   }
+
+  //   scanf(" %[^\n]", search);
+  // }
+
+  // questão 7
+
+  ArvoreBinaria *t = newArvoreBinaria();
 
   int id;
 
   scanf("%d", &id);
 
   while (id != -1) {
-    inserirHashEncadeado(t, pesquisa_sequencial_por_id(c, id));
+    t->root = insert(t->root, pesquisa_sequencial_por_id(c, id));
 
     scanf("%d", &id);
   }
+  // printf("-------------------------------------------------------\n");
+  // inorder_traversal_bst(t->root);
 
   char search[500];
 
   scanf(" %[^\n]", search);
   while (strcmp(search, "FIM") != 0) {
-    Pair r = pesquisarHashEncadeado(t, search);
-
-    if (r.value != NULL) {
-      char buff[500];
-      formatar_restaurante(r.value, buff);
-      printf("%d %s\n", r.key, buff);
+    printf("RAIZ ");
+    Restaurante *resp = search_bst(t->root, search);
+    if (resp != NULL) {
+      char buff[400];
+      formatar_restaurante(resp, buff);
+      printf("SIM %s\n", buff);
     } else {
-      printf("%d\n", -1);
+      printf("NAO\n");
     }
-
     scanf(" %[^\n]", search);
   }
 }
