@@ -447,7 +447,7 @@ typedef struct Lista {
   struct Celula *ultimo;
 } Lista;
 
-void inserirInicio(Lista *lista, void *x) {
+void inserir_inicio(Lista *lista, void *x) {
   Celula *nova = (Celula *)malloc(sizeof(Celula));
   nova->elemento = x;
   nova->prox = NULL;
@@ -462,7 +462,7 @@ void inserirInicio(Lista *lista, void *x) {
   lista->primeiro->prox = nova;
   nova = NULL;
 }
-void inserirInicioOrdenado(Lista *lista, Restaurante *x) {
+void inserir_inicio_ordenado(Lista *lista, Restaurante *x) {
   Celula *nova = (Celula *)malloc(sizeof(Celula));
   nova->elemento = x;
   nova->prox = NULL;
@@ -542,7 +542,7 @@ Celula *newCelula(void *x) {
 int hashEncadeado(int m, char *nome) { return somaAsc(nome) % m; }
 
 void inserirHashEncadeado(HashEncadeado *t, Restaurante *r) {
-  inserirInicio(t->vet[hashEncadeado(31, r->nome)], r);
+  inserir_inicio(t->vet[hashEncadeado(31, r->nome)], r);
 }
 
 void imprimirHashEncadeado(HashEncadeado *t) {
@@ -598,7 +598,7 @@ NodeBST *newNodeBST(Restaurante *r) {
   n->right = NULL;
   n->letter = r->nome[0];
   n->lista = newLista();
-  inserirInicioOrdenado(n->lista, r);
+  inserir_inicio_ordenado(n->lista, r);
 
   return n;
 }
@@ -610,7 +610,7 @@ NodeBST *insert(NodeBST *root, Restaurante *r) {
   // printf("%c %s\n", root->letter, r->nome);
 
   if (root->letter == r->nome[0]) {
-    inserirInicioOrdenado(root->lista, r);
+    inserir_inicio_ordenado(root->lista, r);
   } else if (r->nome[0] < root->letter) {
     root->left = insert(root->left, r);
   } else if (r->nome[0] > root->letter) {
@@ -687,6 +687,94 @@ Restaurante *search_bst(NodeBST *root, char *s) {
 
   printf("DIR ");
   return search_bst(root->right, s);
+}
+
+typedef struct NodeTRIE {
+  Lista *lista;
+  char letter;
+  bool end;
+} NodeTRIE;
+
+typedef struct Trie {
+  NodeTRIE *root;
+} Trie;
+
+NodeTRIE *newNodeTrie(char c) {
+  NodeTRIE *t = (NodeTRIE *)malloc(sizeof(NodeTRIE));
+  t->letter = c;
+  t->lista = newLista();
+  t->end = false;
+
+  return t;
+}
+
+Trie *newTrie() {
+  Trie *t = (Trie *)malloc(sizeof(Trie));
+  t->root = newNodeTrie('\0');
+
+  return t;
+}
+
+NodeTRIE *search_list_node_trie(Lista *lista, char c) {
+  Celula *i = lista->primeiro->prox;
+
+  while (i != NULL) {
+    NodeTRIE *n = (NodeTRIE *)i->elemento;
+    if (n->letter == c) {
+      return n;
+    }
+
+    i = i->prox;
+  }
+
+  return NULL;
+}
+void insert_trie(NodeTRIE *root, char *s) {
+  if (s[0] == '\0') {
+    root->end = true;
+    return;
+  }
+
+  NodeTRIE *c = search_list_node_trie(root->lista, s[0]);
+
+  if (c == NULL) {
+    c = newNodeTrie(s[0]);
+    inserir_inicio(root->lista, c);
+  }
+
+  insert_trie(c, s + 1);
+}
+
+void print_trie(NodeTRIE *root, char *s) {
+  if (root->end == true) {
+    printf("%s\n", s);
+    return;
+  }
+
+  Lista *l = root->lista;
+  for (Celula *i = l->primeiro->prox; i != NULL; i = i->prox) {
+    char d[300];
+    NodeTRIE *n = (NodeTRIE *)i->elemento;
+    sprintf(d, "%s%c", s, n->letter);
+    print_trie(n, d);
+  }
+}
+
+bool search_trie(NodeTRIE *root, char *s) {
+  if (s[0] == '\0' && root->end == true) {
+    printf("SIM\n");
+    return true;
+  }
+
+  NodeTRIE *n = search_list_node_trie(root->lista, s[0]);
+
+  if (n == NULL) {
+    printf("NAO\n");
+    return false;
+  }
+  printf("%c ", n->letter);
+
+  return search_trie(n, s + 1);
 }
 int main() {
   Colecao_Restaurantes *c = ler_csv();
@@ -805,33 +893,57 @@ int main() {
 
   // questão 7
 
-  ArvoreBinaria *t = newArvoreBinaria();
+  // ArvoreBinaria *t = newArvoreBinaria();
+
+  // int id;
+
+  // scanf("%d", &id);
+
+  // while (id != -1) {
+  //   t->root = insert(t->root, pesquisa_sequencial_por_id(c, id));
+
+  //   scanf("%d", &id);
+  // }
+  // // printf("-------------------------------------------------------\n");
+  // // inorder_traversal_bst(t->root);
+
+  // char search[500];
+
+  // scanf(" %[^\n]", search);
+  // while (strcmp(search, "FIM") != 0) {
+  //   printf("RAIZ ");
+  //   Restaurante *resp = search_bst(t->root, search);
+  //   if (resp != NULL) {
+  //     char buff[400];
+  //     formatar_restaurante(resp, buff);
+  //     printf("SIM %s\n", buff);
+  //   } else {
+  //     printf("NAO\n");
+  //   }
+  //   scanf(" %[^\n]", search);
+  // }
+
+  // questão 9
 
   int id;
-
+  Trie *t = newTrie();
   scanf("%d", &id);
 
   while (id != -1) {
-    t->root = insert(t->root, pesquisa_sequencial_por_id(c, id));
+    Restaurante *r = pesquisa_sequencial_por_id(c, id);
+    insert_trie(t->root, r->nome);
 
     scanf("%d", &id);
   }
-  // printf("-------------------------------------------------------\n");
-  // inorder_traversal_bst(t->root);
+
+  print_trie(t->root, "");
 
   char search[500];
 
   scanf(" %[^\n]", search);
   while (strcmp(search, "FIM") != 0) {
-    printf("RAIZ ");
-    Restaurante *resp = search_bst(t->root, search);
-    if (resp != NULL) {
-      char buff[400];
-      formatar_restaurante(resp, buff);
-      printf("SIM %s\n", buff);
-    } else {
-      printf("NAO\n");
-    }
+    search_trie(t->root, search);
+
     scanf(" %[^\n]", search);
   }
 }
