@@ -689,6 +689,7 @@ Restaurante *search_bst(NodeBST *root, char *s) {
   return search_bst(root->right, s);
 }
 
+int compTrie = 0;
 typedef struct NodeTRIE {
   Lista *lista;
   char letter;
@@ -718,8 +719,10 @@ Trie *newTrie() {
 NodeTRIE *search_list_node_trie(Lista *lista, char c) {
   Celula *i = lista->primeiro->prox;
 
+  compTrie++;
   while (i != NULL) {
     NodeTRIE *n = (NodeTRIE *)i->elemento;
+    compTrie++;
     if (n->letter == c) {
       return n;
     }
@@ -730,6 +733,7 @@ NodeTRIE *search_list_node_trie(Lista *lista, char c) {
   return NULL;
 }
 void insert_trie(NodeTRIE *root, char *s) {
+  compTrie++;
   if (s[0] == '\0') {
     root->end = true;
     return;
@@ -737,6 +741,7 @@ void insert_trie(NodeTRIE *root, char *s) {
 
   NodeTRIE *c = search_list_node_trie(root->lista, s[0]);
 
+  compTrie++;
   if (c == NULL) {
     c = newNodeTrie(s[0]);
     inserir_inicio(root->lista, c);
@@ -747,7 +752,7 @@ void insert_trie(NodeTRIE *root, char *s) {
 
 void print_trie(NodeTRIE *root, char *s) {
   if (root->end == true) {
-    printf("%s\n", s);
+    printf("%s ", s);
     return;
   }
 
@@ -761,13 +766,15 @@ void print_trie(NodeTRIE *root, char *s) {
 }
 
 bool search_trie(NodeTRIE *root, char *s) {
+  compTrie++;
   if (s[0] == '\0' && root->end == true) {
-    printf("SIM\n");
+    printf("SIM ");
     return true;
   }
 
   NodeTRIE *n = search_list_node_trie(root->lista, s[0]);
 
+  compTrie++;
   if (n == NULL) {
     printf("NAO\n");
     return false;
@@ -775,6 +782,16 @@ bool search_trie(NodeTRIE *root, char *s) {
   printf("%c ", n->letter);
 
   return search_trie(n, s + 1);
+}
+
+Restaurante *pesquisa_sequencial_por_nome(Restaurante **rs, int end, char *s) {
+  for (int i = 0; i < end; i++) {
+    if (strcmp(rs[i]->nome, s) == 0) {
+      return rs[i];
+    }
+  }
+
+  return NULL;
 }
 int main() {
   Colecao_Restaurantes *c = ler_csv();
@@ -925,25 +942,41 @@ int main() {
 
   // questão 9
 
-  int id;
+  int id, end = 0;
   Trie *t = newTrie();
   scanf("%d", &id);
 
+  int inicio = clock();
   while (id != -1) {
     Restaurante *r = pesquisa_sequencial_por_id(c, id);
     insert_trie(t->root, r->nome);
-
+    rs[end++] = r;
     scanf("%d", &id);
   }
 
-  print_trie(t->root, "");
+  // print_trie(t->root, "");
 
   char search[500];
 
   scanf(" %[^\n]", search);
   while (strcmp(search, "FIM") != 0) {
-    search_trie(t->root, search);
+    if (search_trie(t->root, search)) {
+      char buff[300];
+      Restaurante *r = pesquisa_sequencial_por_nome(rs, end, search);
+
+      formatar_restaurante(r, buff);
+
+      printf("%s\n", buff);
+    }
 
     scanf(" %[^\n]", search);
+  }
+
+  int fim = clock();
+  double tempoTrie = ((double)(fim - inicio) / CLOCKS_PER_SEC);
+  FILE *logArvore = fopen("897962_arvore_trie_lista.txt", "w");
+  if (logArvore) {
+    fprintf(logArvore, "%d\t%d\t%lf\t", MATRICULA, compTrie, tempoTrie);
+    fclose(logArvore);
   }
 }
