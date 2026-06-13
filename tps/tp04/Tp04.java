@@ -529,6 +529,26 @@ class AVL<T extends Comparable<T>> {
 
     return y;
   }
+
+  public T get(T x) {
+    return get(root, x);
+  }
+
+  private T get(Node<T> node, T x) {
+    if (node == null) {
+      return null;
+    }
+
+    int result = x.compareTo(node.key);
+
+    if (result == 0) {
+      return node.key;
+    } else if (result < 0) {
+      return get(node.left, x);
+    } else {
+      return get(node.right, x);
+    }
+  }
 }
 
 class NodeBST {
@@ -739,6 +759,84 @@ class Trie {
   }
 }
 
+class NodeTRIEArvoreBinaria implements Comparable<NodeTRIEArvoreBinaria> {
+  AVL<NodeTRIEArvoreBinaria> rootAVL; // Uma AVL para guardar as próximas letras (filhos)
+  char c;
+  boolean end;
+
+  public NodeTRIEArvoreBinaria(char c) {
+    this.rootAVL = new AVL<NodeTRIEArvoreBinaria>();
+    this.end = false;
+    this.c = c;
+  }
+
+  @Override
+  public int compareTo(NodeTRIEArvoreBinaria outro) {
+    return Character.compare(this.c, outro.c);
+  }
+}
+
+class TrieArvoreBinaria {
+  NodeTRIEArvoreBinaria root;
+  static int compTrie = 0;
+
+  public TrieArvoreBinaria() {
+    root = new NodeTRIEArvoreBinaria(' ');
+  }
+
+  public void insert(String word) {
+    insert(root, word, 0);
+  }
+
+  public void insert(NodeTRIEArvoreBinaria node, String word, int ponteiro) {
+    compTrie++;
+    if (ponteiro >= word.length()) {
+      node.end = true;
+      return;
+    }
+
+    char charAtual = word.charAt(ponteiro);
+
+    // eu crio esse nó temporário para ver se ele é filho do nó atual
+    NodeTRIEArvoreBinaria tmp = new NodeTRIEArvoreBinaria(charAtual);
+
+    // aqui a gente vê se é filho
+    NodeTRIEArvoreBinaria filho = node.rootAVL.get(tmp);
+
+    // se não for filho, então criamos um novo filho para suportar o caractere atual
+    if (filho == null) {
+      filho = new NodeTRIEArvoreBinaria(charAtual);
+      node.rootAVL.insert(filho);
+    }
+
+    insert(filho, word, ponteiro + 1);
+  }
+
+  public boolean search(String word) {
+    return search(root, word, 0);
+  }
+
+  public boolean search(NodeTRIEArvoreBinaria node, String word, int ponteiro) {
+    compTrie++;
+    if (ponteiro >= word.length()) {
+      return node.end;
+    }
+
+    char charAtual = word.charAt(ponteiro);
+    NodeTRIEArvoreBinaria tmp = new NodeTRIEArvoreBinaria(charAtual);
+
+    NodeTRIEArvoreBinaria filho = node.rootAVL.get(tmp);
+
+    if (filho == null) {
+      return false;
+    }
+
+    System.out.print(filho.c + " ");
+
+    return search(filho, word, ponteiro + 1);
+  }
+}
+
 class Tp04 {
   public static Restaurante pesquisaSequencialPorNome(Restaurante[] rs, String nome, int end) {
 
@@ -839,8 +937,50 @@ class Tp04 {
 
     // questão 8
 
-    Trie trie = new Trie();
+    // Trie trie = new Trie();
+    // int id, end = 0;
+    // id = s.nextInt();
+
+    // long inicio = System.nanoTime();
+    // while (id != -1) {
+    // Restaurante r = pesquisaSequencialPorId(c, id);
+    // rs[end++] = r;
+    // trie.insert(r.getNome());
+    // id = s.nextInt();
+    // }
+    // String nome;
+    // s.nextLine();
+    // nome = s.nextLine();
+
+    // while (!(nome.equals("FIM"))) {
+    // if (trie.search(nome)) {
+    // Restaurante r = pesquisaSequencialPorNome(rs, nome, end);
+    // System.out.print("SIM ");
+    // System.out.println(r.formatar());
+    // } else {
+    // System.out.println("NAO");
+    // }
+
+    // nome = s.nextLine();
+    // }
+    // long fim = System.nanoTime();
+
+    // double tempoTrie = (fim - inicio) / 1000000.0;
+
+    // try (BufferedWriter bw = new BufferedWriter(new
+    // FileWriter("897962_arvore_trie_hash.txt"))) {
+    // String conteudo = "897962\t" + Trie.compTrie + "\t" + tempoTrie
+    // + "\t" + "\n";
+    // bw.write(conteudo);
+    // } catch (IOException e) {
+    // System.out.println(e);
+    // }
+
+    // questão 10
+
     int id, end = 0;
+    TrieArvoreBinaria trie = new TrieArvoreBinaria();
+
     id = s.nextInt();
 
     long inicio = System.nanoTime();
@@ -865,11 +1005,11 @@ class Tp04 {
 
       nome = s.nextLine();
     }
+
     long fim = System.nanoTime();
 
     double tempoTrie = (fim - inicio) / 1000000.0;
-
-    try (BufferedWriter bw = new BufferedWriter(new FileWriter("897962_arvore_trie_hash.txt"))) {
+    try (BufferedWriter bw = new BufferedWriter(new FileWriter("897962_arvore_trie_arvore.txt"))) {
       String conteudo = "897962\t" + Trie.compTrie + "\t" + tempoTrie
           + "\t" + "\n";
       bw.write(conteudo);
