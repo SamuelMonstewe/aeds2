@@ -1010,7 +1010,7 @@ class Tp04 {
 
     double tempoTrie = (fim - inicio) / 1000000.0;
     try (BufferedWriter bw = new BufferedWriter(new FileWriter("897962_arvore_trie_arvore.txt"))) {
-      String conteudo = "897962\t" + Trie.compTrie + "\t" + tempoTrie
+      String conteudo = "897962\t" + TrieArvoreBinaria.compTrie + "\t" + tempoTrie
           + "\t" + "\n";
       bw.write(conteudo);
     } catch (IOException e) {
