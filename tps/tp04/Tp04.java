@@ -837,6 +837,88 @@ class TrieArvoreBinaria {
   }
 }
 
+class Pair {
+  int key;
+  Restaurante value;
+
+  public Pair(int key, Restaurante value) {
+    this.key = key;
+    this.value = value;
+  }
+}
+
+class Hashrehash {
+  int m;
+  static int compHash;
+  Restaurante[] table;
+
+  public Hashrehash(int m) {
+    this.m = m;
+    this.table = new Restaurante[m];
+  }
+
+  private int somaAsc(String nome) {
+    int s = 0;
+    for (int i = 0; i < nome.length(); i++) {
+      s += nome.charAt(i);
+    }
+    return s;
+  }
+
+  public int hash(String nome) {
+    return somaAsc(nome) % m;
+  }
+
+  public int rehash(int hashOriginal, int i) {
+    return (hashOriginal + i) % m;
+  }
+
+  public boolean inserir(Restaurante r) {
+    int hashOriginal = hash(r.getNome());
+    int pos = hashOriginal;
+    int i = 0;
+
+    while (i < m) {
+      compHash++;
+      if (table[pos] == null) {
+        table[pos] = r;
+        return true;
+      }
+
+      i++;
+      pos = rehash(hashOriginal, i);
+    }
+    return false;
+  }
+
+  public Pair pesquisar(String nome) {
+    int hashOriginal = hash(nome);
+    int pos = hashOriginal;
+    int i = 0;
+
+    while (i < m) {
+      compHash++;
+      if (table[pos] == null) {
+        return new Pair(-1, null);
+      }
+
+      if (table[pos].getNome().equals(nome)) {
+        return new Pair(pos, table[pos]);
+      }
+
+      i++;
+      pos = rehash(hashOriginal, i);
+    }
+    return new Pair(-1, null);
+  }
+
+  public void mostrar() {
+    for (int i = 0; i < m; i++) {
+      System.out.println((table[i] != null) ? table[i].getNome() : "null");
+    }
+  }
+}
+
 class Tp04 {
   public static Restaurante pesquisaSequencialPorNome(Restaurante[] rs, String nome, int end) {
 
@@ -906,6 +988,32 @@ class Tp04 {
     // } catch (IOException e) {
     // System.out.println(e);
     // }
+
+    // questão 4
+    int id;
+    Hashrehash t = new Hashrehash(83);
+    id = s.nextInt();
+    while (id != -1) {
+      Restaurante r = pesquisaSequencialPorId(c, id);
+      if (t.inserir(r)) {
+        System.out.println(r.getNome());
+      }
+      id = s.nextInt();
+    }
+    String nome;
+    s.nextLine();
+    nome = s.nextLine();
+
+    while (!(nome.equals("FIM"))) {
+      Pair p = t.pesquisar(nome);
+      if (p.value != null) {
+        System.out.println(p.key + " " + p.value.formatar());
+      } else {
+        System.out.println("-1");
+      }
+
+      nome = s.nextLine();
+    }
 
     // questão 6
     // ArvoreBinaria a = new ArvoreBinaria();
@@ -978,44 +1086,45 @@ class Tp04 {
 
     // questão 10
 
-    int id, end = 0;
-    TrieArvoreBinaria trie = new TrieArvoreBinaria();
+    // int id, end = 0;
+    // TrieArvoreBinaria trie = new TrieArvoreBinaria();
 
-    id = s.nextInt();
+    // id = s.nextInt();
 
-    long inicio = System.nanoTime();
-    while (id != -1) {
-      Restaurante r = pesquisaSequencialPorId(c, id);
-      rs[end++] = r;
-      trie.insert(r.getNome());
-      id = s.nextInt();
-    }
-    String nome;
-    s.nextLine();
-    nome = s.nextLine();
+    // long inicio = System.nanoTime();
+    // while (id != -1) {
+    // Restaurante r = pesquisaSequencialPorId(c, id);
+    // rs[end++] = r;
+    // trie.insert(r.getNome());
+    // id = s.nextInt();
+    // }
+    // String nome;
+    // s.nextLine();
+    // nome = s.nextLine();
 
-    while (!(nome.equals("FIM"))) {
-      if (trie.search(nome)) {
-        Restaurante r = pesquisaSequencialPorNome(rs, nome, end);
-        System.out.print("SIM ");
-        System.out.println(r.formatar());
-      } else {
-        System.out.println("NAO");
-      }
+    // while (!(nome.equals("FIM"))) {
+    // if (trie.search(nome)) {
+    // Restaurante r = pesquisaSequencialPorNome(rs, nome, end);
+    // System.out.print("SIM ");
+    // System.out.println(r.formatar());
+    // } else {
+    // System.out.println("NAO");
+    // }
 
-      nome = s.nextLine();
-    }
+    // nome = s.nextLine();
+    // }
 
-    long fim = System.nanoTime();
+    // long fim = System.nanoTime();
 
-    double tempoTrie = (fim - inicio) / 1000000.0;
-    try (BufferedWriter bw = new BufferedWriter(new FileWriter("897962_arvore_trie_arvore.txt"))) {
-      String conteudo = "897962\t" + TrieArvoreBinaria.compTrie + "\t" + tempoTrie
-          + "\t" + "\n";
-      bw.write(conteudo);
-    } catch (IOException e) {
-      System.out.println(e);
-    }
+    // double tempoTrie = (fim - inicio) / 1000000.0;
+    // try (BufferedWriter bw = new BufferedWriter(new
+    // FileWriter("897962_arvore_trie_arvore.txt"))) {
+    // String conteudo = "897962\t" + TrieArvoreBinaria.compTrie + "\t" + tempoTrie
+    // + "\t" + "\n";
+    // bw.write(conteudo);
+    // } catch (IOException e) {
+    // System.out.println(e);
+    // }
     s.close();
   }
 }
