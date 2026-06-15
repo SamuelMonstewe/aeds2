@@ -966,12 +966,15 @@ class Tp04 {
     // chave = s.nextLine();
 
     // while (!chave.equals("FIM")) {
-    // System.out.print("raiz ");
     // Restaurante restauranteBusca = new Restaurante();
     // restauranteBusca.setNome(chave);
 
-    // a.search(restauranteBusca);
-
+    // if (a.search(restauranteBusca)) {
+    // System.out.print("SIM");
+    // } else {
+    // System.out.print("NAO");
+    // }
+    // System.out.println();
     // chave = s.nextLine();
     // }
 
@@ -990,30 +993,30 @@ class Tp04 {
     // }
 
     // questão 4
-    int id;
-    Hashrehash t = new Hashrehash(83);
-    id = s.nextInt();
-    while (id != -1) {
-      Restaurante r = pesquisaSequencialPorId(c, id);
-      if (t.inserir(r)) {
-        System.out.println(r.getNome());
-      }
-      id = s.nextInt();
-    }
-    String nome;
-    s.nextLine();
-    nome = s.nextLine();
+    // int id;
+    // Hashrehash t = new Hashrehash(83);
+    // id = s.nextInt();
+    // while (id != -1) {
+    // Restaurante r = pesquisaSequencialPorId(c, id);
+    // if (t.inserir(r)) {
+    // System.out.println(r.getNome());
+    // }
+    // id = s.nextInt();
+    // }
+    // String nome;
+    // s.nextLine();
+    // nome = s.nextLine();
 
-    while (!(nome.equals("FIM"))) {
-      Pair p = t.pesquisar(nome);
-      if (p.value != null) {
-        System.out.println(p.key + " " + p.value.formatar());
-      } else {
-        System.out.println("-1");
-      }
+    // while (!(nome.equals("FIM"))) {
+    // Pair p = t.pesquisar(nome);
+    // if (p.value != null) {
+    // System.out.println(p.key + " " + p.value.formatar());
+    // } else {
+    // System.out.println("-1");
+    // }
 
-      nome = s.nextLine();
-    }
+    // nome = s.nextLine();
+    // }
 
     // questão 6
     // ArvoreBinaria a = new ArvoreBinaria();

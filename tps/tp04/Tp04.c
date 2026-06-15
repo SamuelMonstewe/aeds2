@@ -798,11 +798,11 @@ int main() {
   char s[500];
   Restaurante *rs[500];
 
-  // questão 1
-  //  RedBlackTree *T = (RedBlackTree *)malloc(sizeof(RedBlackTree));
-  //  T->nil = (Node *)malloc(sizeof(Node));
-  //  T->nil->color = BLACK;
-  //  T->root = T->nil;
+  // // questão 1
+  // RedBlackTree *T = (RedBlackTree *)malloc(sizeof(RedBlackTree));
+  // T->nil = (Node *)malloc(sizeof(Node));
+  // T->nil->color = BLACK;
+  // T->root = T->nil;
 
   // int id = 0;
   // fgets(s, sizeof(s), stdin);
@@ -830,8 +830,8 @@ int main() {
 
   // FILE *logArvore = fopen("897962_arvore_bicolor.txt", "w");
   // if (logArvore) {
-  //   fprintf(logArvore, "%d\t%d\t%lf\t", MATRICULA, compArvore,
-  //   tempoArvore); fclose(logArvore);
+  //   fprintf(logArvore, "%d\t%d\t%lf\t", MATRICULA, compArvore, tempoArvore);
+  //   fclose(logArvore);
   // }
 
   // questão 3
@@ -853,8 +853,7 @@ int main() {
 
   // char search[500];
 
-  // scanf(" %[^\n]", search);
-  // while (strcmp(search, "FIM") != 0) {
+  // while (scanf(" %[^\n]", search) != EOF && strcmp(search, "FIM") != 0) {
   //   Pair r = pesquisar(t, search);
 
   //   if (r.value != NULL) {
@@ -864,8 +863,6 @@ int main() {
   //   } else {
   //     printf("%d\n", -1);
   //   }
-
-  //   scanf(" %[^\n]", search);
   // }
 
   // int fim = clock();
@@ -893,8 +890,7 @@ int main() {
 
   // char search[500];
 
-  // scanf(" %[^\n]", search);
-  // while (strcmp(search, "FIM") != 0) {
+  // while (scanf(" %[^\n]", search) != EOF && strcmp(search, "FIM") != 0) {
   //   Pair r = pesquisarHashEncadeado(t, search);
 
   //   if (r.value != NULL) {
@@ -904,8 +900,6 @@ int main() {
   //   } else {
   //     printf("%d\n", -1);
   //   }
-
-  //   scanf(" %[^\n]", search);
   // }
 
   // questão 7
@@ -926,8 +920,7 @@ int main() {
 
   // char search[500];
 
-  // scanf(" %[^\n]", search);
-  // while (strcmp(search, "FIM") != 0) {
+  // while (scanf(" %[^\n]", search) != EOF && strcmp(search, "FIM") != 0) {
   //   printf("RAIZ ");
   //   Restaurante *resp = search_bst(t->root, search);
   //   if (resp != NULL) {
@@ -937,7 +930,6 @@ int main() {
   //   } else {
   //     printf("NAO\n");
   //   }
-  //   scanf(" %[^\n]", search);
   // }
 
   // questão 9
@@ -958,8 +950,7 @@ int main() {
 
   char search[500];
 
-  scanf(" %[^\n]", search);
-  while (strcmp(search, "FIM") != 0) {
+  while (scanf(" %[^\n]", search) != EOF && strcmp(search, "FIM") != 0) {
     if (search_trie(t->root, search)) {
       char buff[300];
       Restaurante *r = pesquisa_sequencial_por_nome(rs, end, search);
@@ -968,8 +959,6 @@ int main() {
 
       printf("%s\n", buff);
     }
-
-    scanf(" %[^\n]", search);
   }
 
   int fim = clock();
