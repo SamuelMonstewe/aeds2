@@ -421,7 +421,7 @@ Pair pesquisar(HashReserva *t, char *nome) {
   compHashReserva++;
   while (i < t->m + t->r) {
     compHashReserva += 2;
-    if (strcmp(t->vet[i]->nome, nome) == 0) {
+    if (t->vet[i] != NULL && strcmp(t->vet[i]->nome, nome) == 0) {
       return (Pair){i, t->vet[i]};
     }
 
@@ -811,16 +811,22 @@ int main() {
   // int inicio = clock();
   // while (id != -1) {
   //   Restaurante *r = pesquisa_sequencial_por_id(c, id);
-  //   T->root = RB_insert_wrapper(T, r);
+  //   if (r != NULL)
+  //     T->root = RB_insert_wrapper(T, r);
   //   fgets(s, sizeof(s), stdin);
   //   sscanf(s, "%d", &id);
   // }
 
-  // while (fgets(s, sizeof(s), stdin) != NULL &&
-  //        !(s[0] == 'F' && s[1] == 'I' && s[2] == 'M')) {
+  // int status = scanf(" %[^\n]", s);
+  // if (status != EOF)
   //   retirar_quebra_de_linha(s);
+  // while (status != EOF && strcmp(s, "FIM") != 0) {
   //   printf("raiz ");
   //   search(T, T->root, s);
+
+  //   status = scanf(" %[^\n]", s);
+  //   if (status != EOF)
+  //     retirar_quebra_de_linha(s);
   // }
 
   // inorder_traversal(T, T->root);
@@ -835,17 +841,14 @@ int main() {
   // }
 
   // questão 3
-
   // HashReserva *t = newHashReserva(31, 19);
-
   // int id;
-
   // scanf("%d", &id);
 
   // int inicio = clock();
   // while (id != -1) {
   //   Restaurante *r = pesquisa_sequencial_por_id(c, id);
-  //   if (!inserirHashReserva(t, r)) {
+  //   if (r != NULL && !inserirHashReserva(t, r)) {
   //     printf("%s\n", r->nome);
   //   }
   //   scanf("%d", &id);
@@ -853,7 +856,11 @@ int main() {
 
   // char search[500];
 
-  // while (scanf(" %[^\n]", search) != EOF && strcmp(search, "FIM") != 0) {
+  // int status = scanf(" %[^\n]", search);
+  // if (status != EOF)
+  //   retirar_quebra_de_linha(search);
+
+  // while (status != EOF && strcmp(search, "FIM") != 0) {
   //   Pair r = pesquisar(t, search);
 
   //   if (r.value != NULL) {
@@ -863,34 +870,41 @@ int main() {
   //   } else {
   //     printf("%d\n", -1);
   //   }
+
+  //   status = scanf(" %[^\n]", search);
+  //   if (status != EOF)
+  //     retirar_quebra_de_linha(search);
   // }
 
   // int fim = clock();
-
   // double tempoReserva = ((double)(fim - inicio)) / CLOCKS_PER_SEC;
   // FILE *logArvore = fopen("897962_hash_reserva.txt", "w");
   // if (logArvore) {
-  //   fprintf(logArvore, "%d\t%d\t%lf\t", MATRICULA, compArvore, tempoReserva);
+
+  //   fprintf(logArvore, "%d\t%d\t%lf\t", MATRICULA, compHashReserva,
+  //           tempoReserva);
   //   fclose(logArvore);
   // }
 
   // questão 4
-
   // HashEncadeado *t = newHashEncadeado();
-
   // int id;
-
   // scanf("%d", &id);
 
   // while (id != -1) {
-  //   inserirHashEncadeado(t, pesquisa_sequencial_por_id(c, id));
-
+  //   Restaurante *r = pesquisa_sequencial_por_id(c, id);
+  //   if (r != NULL)
+  //     inserirHashEncadeado(t, r);
   //   scanf("%d", &id);
   // }
 
   // char search[500];
 
-  // while (scanf(" %[^\n]", search) != EOF && strcmp(search, "FIM") != 0) {
+  // int status = scanf(" %[^\n]", search);
+  // if (status != EOF)
+  //   retirar_quebra_de_linha(search);
+
+  // while (status != EOF && strcmp(search, "FIM") != 0) {
   //   Pair r = pesquisarHashEncadeado(t, search);
 
   //   if (r.value != NULL) {
@@ -900,27 +914,32 @@ int main() {
   //   } else {
   //     printf("%d\n", -1);
   //   }
+
+  //   status = scanf(" %[^\n]", search);
+  //   if (status != EOF)
+  //     retirar_quebra_de_linha(search);
   // }
 
   // questão 7
-
   // ArvoreBinaria *t = newArvoreBinaria();
-
   // int id;
-
   // scanf("%d", &id);
 
   // while (id != -1) {
-  //   t->root = insert(t->root, pesquisa_sequencial_por_id(c, id));
-
+  //   Restaurante *r = pesquisa_sequencial_por_id(c, id);
+  //   if (r != NULL)
+  //     t->root = insert(t->root, r);
   //   scanf("%d", &id);
   // }
-  // // printf("-------------------------------------------------------\n");
-  // // inorder_traversal_bst(t->root);
 
   // char search[500];
 
-  // while (scanf(" %[^\n]", search) != EOF && strcmp(search, "FIM") != 0) {
+  // // Leitura segura para a questão 7
+  // int status = scanf(" %[^\n]", search);
+  // if (status != EOF)
+  //   retirar_quebra_de_linha(search);
+
+  // while (status != EOF && strcmp(search, "FIM") != 0) {
   //   printf("RAIZ ");
   //   Restaurante *resp = search_bst(t->root, search);
   //   if (resp != NULL) {
@@ -930,42 +949,54 @@ int main() {
   //   } else {
   //     printf("NAO\n");
   //   }
+
+  //   status = scanf(" %[^\n]", search);
+  //   if (status != EOF)
+  //     retirar_quebra_de_linha(search);
   // }
 
   // questão 9
+  // int id, end = 0;
+  // Trie *t = newTrie();
+  // scanf("%d", &id);
 
-  int id, end = 0;
-  Trie *t = newTrie();
-  scanf("%d", &id);
+  // int inicio = clock();
+  // while (id != -1) {
+  //   Restaurante *r = pesquisa_sequencial_por_id(c, id);
+  //   if (r != NULL) {
+  //     insert_trie(t->root, r->nome);
+  //     rs[end++] = r;
+  //   }
+  //   scanf("%d", &id);
+  // }
 
-  int inicio = clock();
-  while (id != -1) {
-    Restaurante *r = pesquisa_sequencial_por_id(c, id);
-    insert_trie(t->root, r->nome);
-    rs[end++] = r;
-    scanf("%d", &id);
-  }
+  // char search[500];
 
-  // print_trie(t->root, "");
+  // int status = scanf(" %[^\n]", search);
+  // if (status != EOF)
+  //   retirar_quebra_de_linha(search);
 
-  char search[500];
+  // while (status != EOF && strcmp(search, "FIM") != 0) {
 
-  while (scanf(" %[^\n]", search) != EOF && strcmp(search, "FIM") != 0) {
-    if (search_trie(t->root, search)) {
-      char buff[300];
-      Restaurante *r = pesquisa_sequencial_por_nome(rs, end, search);
+  //   if (search_trie(t->root, search)) {
+  //     char buff[300];
+  //     Restaurante *r = pesquisa_sequencial_por_nome(rs, end, search);
+  //     formatar_restaurante(r, buff);
+  //     printf("%s\n", buff);
+  //   }
 
-      formatar_restaurante(r, buff);
+  //   status = scanf(" %[^\n]", search);
+  //   if (status != EOF)
+  //     retirar_quebra_de_linha(search);
+  // }
 
-      printf("%s\n", buff);
-    }
-  }
+  // int fim = clock();
+  // double tempoTrie = ((double)(fim - inicio) / CLOCKS_PER_SEC);
+  // FILE *logArvore = fopen("897962_arvore_trie_lista.txt", "w");
+  // if (logArvore) {
+  //   fprintf(logArvore, "%d\t%d\t%lf\t", MATRICULA, compTrie, tempoTrie);
+  //   fclose(logArvore);
+  // }
 
-  int fim = clock();
-  double tempoTrie = ((double)(fim - inicio) / CLOCKS_PER_SEC);
-  FILE *logArvore = fopen("897962_arvore_trie_lista.txt", "w");
-  if (logArvore) {
-    fprintf(logArvore, "%d\t%d\t%lf\t", MATRICULA, compTrie, tempoTrie);
-    fclose(logArvore);
-  }
+  return 0;
 }
