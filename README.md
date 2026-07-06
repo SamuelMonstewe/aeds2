@@ -2,7 +2,7 @@
 
 ![IMAGE](fotorepo.png)
 
-Este repositório contém tudo que eu aprendi sobre **AEDS II (Algoritmos e Estruturas de Dados II)** até o momento.
+Este repositório contém conteúdos do curso de **AEDS II (Algoritmos e Estruturas de Dados II)** apresentados no primeiro semestre de 2025.
 Nesta disciplina são abordados os seguintes tópicos:
 - Noções de complexidade
 - Ordenação interna e seleção
